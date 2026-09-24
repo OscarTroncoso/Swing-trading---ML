@@ -29,7 +29,7 @@ A simplified financing stress is charged to the borrowed part of exposure (`noti
 
 There is **no forced 3-day or 5-day exit** in V4.
 
-There is no calendar-day holding limit. A trade stays open until Stop Loss or Take Profit **unless the technical thesis is explicitly invalidated** (momentum/trend reversal), in which case the exit is scheduled for the next open. This replaces an arbitrary 3/5-day timeout with an information-based exit. If the evaluation period ends while a position remains active, it stays `OPEN`; final equity is marked to market instead of inventing an end-of-period trade close.
+There is no maximum calendar-day holding limit. By default V4 uses an **adaptive checkpoint**: before bar 5 it only exits early for an extreme opposing trend; from bar 5 onward it can remain open indefinitely while momentum or trend structure still supports the original direction. If that thesis disappears, the exit is scheduled for the next open. SL/TP remain active throughout. This replaces an arbitrary 3/5-day expiry with an information-based continuation test. If the evaluation period ends while a position remains active, it stays `OPEN`; final equity is marked to market instead of inventing an end-of-period trade close.
 
 ## ML in V4
 
