@@ -177,3 +177,42 @@ def test_v4_ml_events_are_purged_and_barrier_resolved():
     asof=ev.signalDate.iloc[-10]
     model,meta=fit_best_v4_model(ev,asof,mlp)
     assert meta['trainingEvents']>0
+
+
+def test_v4_exit_reasons_are_barrier_or_thesis_not_time():
+    b=backtest_v4(synthetic(1600,seed=41),V4Params(thesis_exit_enabled=True))
+    allowed={'SL','SL_GAP','TP','TP_GAP','THESIS_INVALIDATED'}
+    assert all(t['reason'] in allowed for t in b['trades'])
+    assert all(pd.Timestamp(t['signalDate']) < pd.Timestamp(t['entry']) <= pd.Timestamp(t['exit']) for t in b['trades'])
+
+
+def test_v4_selected_leverage_is_highest_feasible_alternative():
+    d=synthetic(1200,seed=42); p=V4Params(); r=features(d,p).dropna().iloc[-1]
+    side=1 if r.close>r.sma50 else -1
+    plan=position_plan_v4(1000,float(r.close),side,float(r.atr),r,p)
+    if plan['valid']:
+        alts=plan['leverageAlternatives']
+        feasible=[a['leverage'] for a in alts if a['withinRiskBudget']]
+        assert feasible
+        assert plan['tradeLeverage']==max(feasible)
+        assert sum(bool(a['selected']) for a in alts)==1
+
+
+def test_v4_financing_is_reported_and_nonnegative():
+    b=backtest_v4(synthetic(1800,seed=43),V4Params(financing_annual_pct_borrowed=.08,max_trade_leverage=30))
+    for t in b['trades']:
+        assert t.get('financingCostEUR',0)>=0
+        if t.get('tradeLeverage',1)<=1.0+1e-9:
+            assert abs(t.get('financingCostEUR',0))<1e-9
+
+
+def test_v4_ml_model_selection_is_small_and_chronological():
+    d=synthetic(2300,seed=44); p=V4Params(); mlp=MLV4Params(min_train_events=60,label_horizon_bars=60,min_validation_auc=.45)
+    ev=build_v4_events(d,p,mlp)
+    assert len(ev)>60
+    asof=ev.signalDate.iloc[-5]
+    model,meta=fit_best_v4_model(ev,asof,mlp)
+    assert meta['trainingEvents']>0
+    if model is not None:
+        assert meta['selectedModel'] in {'logistic','hist_gradient_boosting'}
+        assert meta['validationAUC']>=.45
