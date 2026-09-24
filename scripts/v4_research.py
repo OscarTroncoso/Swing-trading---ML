@@ -42,6 +42,8 @@ def yearly_eval(df, p: V4Params, first=2020, last=2026):
 
 def summarize_years(name: str, y: pd.DataFrame) -> dict:
     rets = y["totalReturn"].astype(float)
+    avg_lev_col = "avgTradeLeverage" if "avgTradeLeverage" in y.columns else ("avgLeverage" if "avgLeverage" in y.columns else None)
+    max_lev_col = "maxTradeLeverageUsed" if "maxTradeLeverageUsed" in y.columns else ("maxLeverageUsed" if "maxLeverageUsed" in y.columns else None)
     return {
         "variant": name,
         "years": int(len(y)),
@@ -55,8 +57,8 @@ def summarize_years(name: str, y: pd.DataFrame) -> dict:
         "maxObservedDrawdownPct": round(float(y["maxDrawdown"].max()), 4),
         "medianClosedTrades": round(float(y["totalTrades"].median()), 2),
         "meanExposurePct": round(float(y["exposurePct"].mean()), 2),
-        "meanTradeLeverage": round(float(y["avgTradeLeverage"].mean()), 2),
-        "maxTradeLeverageUsed": round(float(y["maxTradeLeverageUsed"].max()), 2),
+        "meanTradeLeverage": round(float(y[avg_lev_col].mean()), 2) if avg_lev_col else 0.0,
+        "maxTradeLeverageUsed": round(float(y[max_lev_col].max()), 2) if max_lev_col else 0.0,
     }
 
 
