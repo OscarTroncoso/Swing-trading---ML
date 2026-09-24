@@ -66,6 +66,9 @@
     "targetRR": 1.8,
     "maxHoldingBars": 0,
     "thesisExitEnabled": true,
+    "exitPolicy": "adaptive_checkpoint",
+    "checkpointBars": 5,
+    "continuationMinTrendScore": 3,
     "thesisExitRSIMid": 50.0,
     "thesisExitStrongReversalADX": 25.0,
     "thesisExitMaxAlignmentScore": 1
