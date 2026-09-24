@@ -150,7 +150,7 @@ def build_v4_events(df: pd.DataFrame, p: V4Params, mlp: MLV4Params) -> pd.DataFr
                     exit_px = take + adverse; outcome_reason = "TP"; outcome_end = x.index[j]; break
 
             if j < last:
-                pending_thesis = thesis_invalidated_v4(rr, side, p)
+                pending_thesis = thesis_invalidated_v4(rr, side, p, holding_bars=max(0, j-entry_i))
 
         if exit_px is None or outcome_end is None:
             continue
