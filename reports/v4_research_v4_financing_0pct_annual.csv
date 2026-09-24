@@ -1,0 +1,8 @@
+variant,year,accountCurrency,initialCapitalEUR,finalCapitalEUR,finalEquityEUR,realizedReturnPct,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,openTrades,sharpe,sortino,avgTradeEUR,expectancyR,exposurePct,avgTradeLeverage,maxTradeLeverageUsed,avgAccountExposureX,stoppedTrades,takeProfitTrades,timeExitTrades,rejectedStrongOpposingTrend,rejectedSize
+v4_financing_0pct,2020,EUR,1000.0,998.71,1000.52,-0.1289,0.0515,31.58,3.0998,0.9806,19,1,0.0317,0.0389,-0.07,-0.015,86.26,5.63,11.0,0.572,6,5,0,0,0
+v4_financing_0pct,2021,EUR,1000.0,1004.27,1004.27,0.4272,0.4272,45.45,2.2712,1.1374,11,0,0.1611,0.2173,0.39,0.081,79.31,6.73,11.0,0.68,2,1,0,0,0
+v4_financing_0pct,2022,EUR,1000.0,963.78,967.7,-3.6224,-3.2298,23.53,3.6673,0.4098,17,1,-1.0698,-1.2212,-2.13,-0.4,78.46,3.53,7.0,0.351,7,2,0,0,0
+v4_financing_0pct,2023,EUR,1000.0,1007.64,1013.29,0.7639,1.3293,45.45,1.9656,1.3872,11,1,0.4475,0.6798,0.69,0.114,80.77,4.91,8.0,0.485,1,1,0,0,0
+v4_financing_0pct,2024,EUR,1000.0,1001.14,1003.55,0.114,0.3553,35.29,3.6092,1.0218,17,1,0.1104,0.1508,0.07,0.03,83.97,7.53,12.0,0.772,3,3,0,0,0
+v4_financing_0pct,2025,EUR,1000.0,994.24,1002.34,-0.5756,0.2338,44.44,2.344,0.8686,18,1,0.0895,0.1327,-0.32,-0.019,79.38,4.44,8.0,0.436,2,3,0,0,0
+v4_financing_0pct,2026,EUR,1000.0,991.53,994.88,-0.8471,-0.5119,38.46,1.8254,0.8642,13,1,-0.148,-0.1888,-0.65,0.044,80.95,8.38,13.0,0.882,4,4,0,0,0
