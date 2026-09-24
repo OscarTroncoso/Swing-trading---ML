@@ -1,0 +1,8 @@
+variant,year,accountCurrency,initialCapitalEUR,finalCapitalEUR,finalEquityEUR,realizedReturnPct,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,openTrades,sharpe,sortino,avgTradeEUR,expectancyR,exposurePct,avgTradeLeverage,maxTradeLeverageUsed,avgAccountExposureX,stoppedTrades,takeProfitTrades,timeExitTrades,rejectedStrongOpposingTrend,rejectedSize
+v4_checkpoint_3,2020,EUR,1000.0,971.8,972.89,-2.8198,-2.7107,26.32,4.7007,0.6668,19,1,-0.7085,-0.8606,-1.48,-0.192,87.79,5.63,11.0,0.572,7,5,0,0,0
+v4_checkpoint_3,2021,EUR,1000.0,985.88,989.11,-1.412,-1.0895,20.0,3.1626,0.6054,10,1,-0.3119,-0.4535,-1.41,-0.162,88.89,7.7,13.0,0.712,1,2,0,0,0
+v4_checkpoint_3,2022,EUR,1000.0,990.31,989.77,-0.9693,-1.023,33.33,2.6595,0.8295,15,1,-0.3062,-0.3903,-0.65,-0.131,84.23,3.67,7.0,0.361,8,4,0,0,0
+v4_checkpoint_3,2023,EUR,1000.0,999.65,996.43,-0.0349,-0.3565,36.36,2.3534,0.9898,11,1,-0.0956,-0.1325,-0.03,0.038,87.69,4.91,8.0,0.485,3,2,0,0,0
+v4_checkpoint_3,2024,EUR,1000.0,991.14,992.63,-0.8857,-0.7365,40.0,4.7874,0.8662,15,1,-0.1589,-0.2119,-0.59,-0.037,87.02,7.53,12.0,0.793,4,4,0,0,0
+v4_checkpoint_3,2025,EUR,1000.0,972.45,977.2,-2.7553,-2.2802,27.78,4.086,0.5868,18,1,-0.6733,-0.9944,-1.53,-0.238,80.93,4.56,7.0,0.441,4,3,0,0,0
+v4_checkpoint_3,2026,EUR,1000.0,1000.2,1002.83,0.0205,0.2835,44.44,1.5625,1.0075,9,1,0.1307,0.1696,0.02,0.08,91.01,6.67,11.0,0.673,0,2,0,0,0

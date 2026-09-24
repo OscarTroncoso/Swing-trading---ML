@@ -1,0 +1,8 @@
+variant,year,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades
+v31_time_exit_benchmark,2020,EUR,1000.0,1002.75,0.2749,42.42,2.9908,1.037,33,0.1084,0.1274,0.08,65.27,0.543,0.89,0
+v31_time_exit_benchmark,2021,EUR,1000.0,1027.72,2.7719,53.33,1.0953,1.6414,30,0.9651,1.0913,0.92,61.69,0.682,0.897,0
+v31_time_exit_benchmark,2022,EUR,1000.0,996.33,-0.3666,50.0,2.6396,0.9428,36,-0.1462,-0.1664,-0.1,68.85,0.31,0.638,0
+v31_time_exit_benchmark,2023,EUR,1000.0,1024.8,2.4805,60.0,1.2176,1.6127,35,0.9721,1.3435,0.71,71.92,0.469,0.612,0
+v31_time_exit_benchmark,2024,EUR,1000.0,986.51,-1.349,44.12,4.156,0.8057,34,-0.4302,-0.5091,-0.4,69.85,0.655,0.832,0
+v31_time_exit_benchmark,2025,EUR,1000.0,987.67,-1.2332,40.0,2.562,0.7742,35,-0.4961,-0.5833,-0.35,69.65,0.476,0.9,0
+v31_time_exit_benchmark,2026,EUR,1000.0,1024.53,2.4528,65.22,1.9146,1.7597,23,1.0225,1.3935,1.07,64.55,0.712,0.939,0

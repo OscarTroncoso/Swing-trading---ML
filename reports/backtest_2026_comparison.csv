@@ -1,4 +1,4 @@
 model,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades,finalEquityEUR,realizedReturnPct,openTrades,expectancyR,avgTradeLeverage,maxTradeLeverageUsed,avgAccountExposureX,stoppedTrades,takeProfitTrades,timeExitTrades,rejectedStrongOpposingTrend,rejectedSize
 V3.1 benchmark / 5-day time exit,EUR,1000.0,1024.53,2.4528,65.22,1.9146,1.7597,23,1.0225,1.3935,1.07,64.55,0.712,0.939,0.0,,,,,,,,,,,,
-V4 / SL-TP only / EUR sizing,EUR,1000.0,977.8,-1.9633,38.46,2.9272,0.6868,13,-0.628,-0.7973,-1.71,80.95,,,,980.37,-2.2203,1.0,-0.088,8.38,13.0,0.882,4.0,4.0,0.0,0.0,0.0
-V4 + ML advisory risk scaling,EUR,1000.0,982.47,-1.4752,38.46,2.4724,0.731,13,-0.4898,-0.6163,-1.35,80.95,,,,985.25,-1.7529,1.0,-0.087,7.85,11.0,0.822,4.0,4.0,0.0,0.0,0.0
+V4 / SL-TP only / EUR sizing,EUR,1000.0,1000.2,0.2835,44.44,1.5625,1.0075,9,0.1307,0.1696,0.02,91.01,,,,1002.83,0.0205,1.0,0.08,6.67,11.0,0.673,0.0,2.0,0.0,0.0,0.0
+V4 + ML advisory risk scaling,EUR,1000.0,1003.01,0.5846,44.44,1.5108,1.1378,9,0.2638,0.344,0.33,91.01,,,,1005.85,0.3011,1.0,0.083,6.11,9.0,0.611,0.0,2.0,0.0,0.0,0.0
