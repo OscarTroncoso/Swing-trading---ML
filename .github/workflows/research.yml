@@ -1,6 +1,16 @@
-name: Full V3.2 research suite
+name: V4 research and dashboard
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - v4-risk-ml-rework
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'config.json'
+      - 'requirements.txt'
+      - '.github/workflows/research.yml'
 permissions:
   contents: write
 jobs:
@@ -15,34 +25,23 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Tests
         run: pytest -q
-      - name: Freeze exact 10-year EURUSD OHLC
+      - name: Freeze exact EURUSD OHLC sample
         run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/research_10y.csv
-      - name: V3.1 benchmark vs V3.2 current
+      - name: V3.1 vs V4 vs V4-ML advisory
         run: python scripts/backtest_2026.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Stop MAE MFE and false-stop diagnostics
-        run: python scripts/stop_diagnostics.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Component ablation
-        run: python scripts/v32_ablation.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Return and risk attribution
-        run: python scripts/improvement_research.py --csv data/research_10y.csv --start 2026-01-01
-      - name: V3.2 structural robustness
-        run: python scripts/robustness_2026.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Frozen annual walk-forward
-        run: python scripts/walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-      - name: ML research-only annual walk-forward
-        run: python scripts/ml_walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-      - name: ML health/feature research
-        run: python scripts/ml_research.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Commit refreshed research outputs
+      - name: Multi-year V4 architecture and leverage research
+        run: python scripts/v4_research.py --csv data/research_10y.csv --first-year 2020 --last-year 2026
+      - name: Commit refreshed V4 outputs
+        if: github.ref == 'refs/heads/v4-risk-ml-rework'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data.json data.equity.csv data/research_10y.csv reports/*.csv reports/*.json
-          git diff --cached --quiet || git commit -m "research: refresh V3.2 trend and structural-risk results"
+          git diff --cached --quiet || git commit -m "research: refresh V4 model results"
           git push
       - uses: actions/upload-artifact@v4
         with:
-          name: eurusd-v32-full-research
+          name: eurusd-v4-research
           path: |
             data/research_10y.csv
             data.json
