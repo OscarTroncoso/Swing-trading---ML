@@ -85,6 +85,7 @@ def load_v4_params(path: str | Path | None = None, **overrides):
         'min_trade_leverage': r.get('minTradeLeverage', 1.0),
         'max_trade_leverage': r.get('maxTradeLeverage', 30.0),
         'leverage_step': r.get('leverageStep', 1.0),
+        'financing_annual_pct_borrowed': r.get('financingAnnualPctBorrowed', 0.04),
         'volatility_target': r.get('volatilityTarget', 0.08),
         'vol_scale_min': r.get('volScaleMin', 0.70),
         'vol_scale_max': r.get('volScaleMax', 1.15),
