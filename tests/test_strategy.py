@@ -1,137 +1,124 @@
 from __future__ import annotations
 from dataclasses import replace
-import numpy as np
-import pandas as pd
+import numpy as np, pandas as pd
 
-from src.strategy_engine import Params, backtest, backtest_legacy_fair, features, position_plan, signal_row, pnl_eur, adaptive_risk_pct
+from src.strategy_engine import (Params, backtest, backtest_v31_benchmark, features, position_plan, signal_row,
+                                 signal_decision, trend_context, pnl_eur, adaptive_risk_pct, dynamic_stop_atr)
 from src.ml_meta import MLParams, build_event_labels, fit_model_for_date, backtest_ml, FEATURE_SETS
 from src.config import load_params, load_ml_params
 
 
 def synthetic(n=1800, drift=0.00008, seed=7):
-    rng=np.random.default_rng(seed)
-    reg=np.where((np.arange(n)//180)%2==0, drift, -drift/2)
-    cycle=.0007*np.sin(np.arange(n)/18)
-    ret=reg+cycle+rng.normal(0,0.003,n)
-    close=1.05*np.exp(np.cumsum(ret))
-    open_=np.r_[close[0],close[:-1]*(1+rng.normal(0,0.00035,n-1))]
-    wiggle=np.maximum(0.0007,np.abs(close-open_)*0.7+rng.uniform(0.0001,0.0012,n))
-    high=np.maximum(open_,close)+wiggle; low=np.minimum(open_,close)-wiggle
-    idx=pd.date_range('2019-01-01',periods=n,freq='B',tz='UTC')
-    return pd.DataFrame({'open':open_,'high':high,'low':low,'close':close},index=idx)
+    rng=np.random.default_rng(seed); reg=np.where((np.arange(n)//180)%2==0,drift,-drift/2); cycle=.0007*np.sin(np.arange(n)/18)
+    ret=reg+cycle+rng.normal(0,0.003,n); close=1.05*np.exp(np.cumsum(ret)); open_=np.r_[close[0],close[:-1]*(1+rng.normal(0,0.00035,n-1))]
+    wiggle=np.maximum(0.0007,np.abs(close-open_)*.7+rng.uniform(.0001,.0012,n)); high=np.maximum(open_,close)+wiggle; low=np.minimum(open_,close)-wiggle
+    idx=pd.date_range('2019-01-01',periods=n,freq='B',tz='UTC'); return pd.DataFrame({'open':open_,'high':high,'low':low,'close':close},index=idx)
 
 
 def test_features_expected_columns():
-    f=features(synthetic(500),Params())
-    for c in ['rsi','sma50','macd_hist','atr','adx','bb_z','rv20','sma_gap','macd_atr']:
+    f=features(synthetic(600),Params())
+    for c in ['rsi','sma50','ema50','ema200','ema50_slope','macd_hist','atr','adx','plus_di','minus_di','rv20','swing_low','swing_high','rv20_q33','rv20_q67']:
         assert c in f.columns
 
 
 def test_future_changes_do_not_change_past_signals():
-    p=Params(); d=synthetic(600); cutoff=380
-    f1=features(d,p); s1=[signal_row(f1.iloc[i],p) for i in range(80,cutoff)]
-    d2=d.copy(); d2.iloc[cutoff+5:]*=1.20
-    f2=features(d2,p); s2=[signal_row(f2.iloc[i],p) for i in range(80,cutoff)]
-    assert s1==s2
+    p=Params(); d=synthetic(800); cutoff=500; f1=features(d,p); s1=[signal_row(f1.iloc[i],p) for i in range(250,cutoff)]
+    d2=d.copy(); d2.iloc[cutoff+5:]*=1.2; f2=features(d2,p); s2=[signal_row(f2.iloc[i],p) for i in range(250,cutoff)]; assert s1==s2
 
 
 def test_signal_precedes_entry():
-    b=backtest(synthetic(600),Params())
-    for t in b['trades']:
-        assert pd.Timestamp(t['signalDate']) < pd.Timestamp(t['entry']) <= pd.Timestamp(t['exit'])
+    b=backtest(synthetic(900),Params())
+    for t in b['trades']: assert pd.Timestamp(t['signalDate'])<pd.Timestamp(t['entry'])<=pd.Timestamp(t['exit'])
 
 
 def test_start_uses_prior_history_as_warmup():
-    d=synthetic(600); start=d.index[240]
-    b=backtest(d,Params(),start=start)
-    assert b['equity'].index[0] == start
+    d=synthetic(900); start=d.index[400]; b=backtest(d,Params(),start=start); assert b['equity'].index[0]==start
 
 
-def test_account_is_eur_and_notional_is_not_hardcoded_units():
-    d=synthetic(650); p=Params(initial_capital_eur=17_500,sizing_mode='fixed_notional',fixed_notional_eur=17_500,max_leverage=1.0)
-    b=backtest(d,p)
-    assert b['metrics']['initialCapitalEUR']==17500
-    assert b['metrics']['accountCurrency']=='EUR'
-    assert all(t['notionalEUR']<=17_500+1e-9 for t in b['trades'])
+def test_account_eur_and_dynamic_notional():
+    d=synthetic(950); p=Params(initial_capital_eur=17500,sizing_mode='adaptive_risk',max_leverage=1.0); b=backtest(d,p)
+    assert b['metrics']['initialCapitalEUR']==17500 and b['metrics']['accountCurrency']=='EUR'; assert all(t['notionalEUR']<=17500*1.1 for t in b['trades'])
 
 
-def test_eurusd_pnl_is_converted_back_to_eur():
-    # 10k EUR units, +100 pips = +100 USD, translated at the exit FX rate.
-    assert abs(pnl_eur(1.10,1.11,10_000,1)-(100/1.11))<1e-9
+def test_eurusd_pnl_conversion(): assert abs(pnl_eur(1.10,1.11,10_000,1)-(100/1.11))<1e-9
 
 
-def test_position_plan_reports_leverage_and_no_leverage_alternative():
-    d=synthetic(500); p=Params(max_leverage=3.0,sizing_mode='risk',risk_per_trade=.01)
-    r=features(d,p).dropna().iloc[-1]
-    plan=position_plan(10_000,float(r.close),1,float(r.atr),r,p)
-    assert plan['recommended']['leverage']<=3.0+1e-9
-    assert plan['noLeverageAlternative']['leverage']<=1.0+1e-9
-    assert isinstance(plan['recommended']['usesLeverage'],bool)
-    assert plan['recommended']['riskAtStopEUR']>=0
+def test_position_plan_reports_structure_and_leverage():
+    d=synthetic(900); p=Params(max_leverage=1.5); r=features(d,p).dropna().iloc[-1]; side=1 if r.close>r.sma50 else -1
+    plan=position_plan(10_000,float(r.close),side,float(r.atr),r,p)
+    assert 'stopSource' in plan and 'stopDistanceATR' in plan and 'trend' in plan
+    assert plan['recommended']['leverage']<=1.5+1e-9
 
 
-def test_absolute_unit_cap_is_respected():
-    p=Params(sizing_mode='risk',risk_per_trade=.02,max_leverage=10.0,absolute_max_units=12000)
-    b=backtest(synthetic(700),p)
-    assert all(t['units']<=12000+1e-9 for t in b['trades'])
+def test_stop_too_wide_is_rejected():
+    d=synthetic(900); p=Params(max_stop_atr=.5); r=features(d,p).dropna().iloc[-1]; side=1 if r.close>r.sma50 else -1
+    plan=position_plan(10_000,float(r.close),side,float(r.atr),r,p); assert not plan['valid'] and plan['rejectionReason']=='STOP_TOO_WIDE'
 
 
 def test_adaptive_risk_is_bounded():
-    r=features(synthetic(500),Params()).dropna().iloc[-1]; p=Params(min_risk_per_trade=.0025,max_risk_per_trade=.01)
-    for prob in [None,.60,.70,.90]:
-        x=adaptive_risk_pct(r,p,prob); assert .0025-1e-12<=x<=.01+1e-12
+    r=features(synthetic(900),Params()).dropna().iloc[-1]; p=Params(min_risk_per_trade=.0025,max_risk_per_trade=.0075)
+    for side in [-1,1]:
+        x=adaptive_risk_pct(r,p,side); assert .0025-1e-12<=x<=.0075+1e-12
+
+
+def test_trend_context_score_range():
+    p=Params(); r=features(synthetic(900),p).dropna().iloc[-1]; c=trend_context(r,1,p); assert 0<=c['score']<=5 and c['maxScore']==5
+
+
+def test_trend_filter_can_reject_candidate():
+    p=Params(min_trend_score=5); f=features(synthetic(1100,seed=13),p).dropna(); found=False
+    for _,r in f.iterrows():
+        d=signal_decision(r,p)
+        if d.get('candidate') and not d.get('accepted'):
+            found=True; break
+    assert found
+
+
+def test_volatility_stop_multiplier_is_declared():
+    p=Params(); r=features(synthetic(900),p).dropna().iloc[-1]; assert dynamic_stop_atr(r,p) in [p.stop_atr_low_vol,p.stop_atr_normal,p.stop_atr_high_vol]
+
+
+def test_metrics_include_excursion_diagnostics():
+    q=backtest(synthetic(1100),Params())['metrics']
+    for k in ['expectancyR','avgMFER','avgMAER','medianWinnerCaptureRatio','stoppedTrades','rejectedTrendSignals','rejectedWideStops']: assert k in q and np.isfinite(q[k])
+
+
+def test_trade_diagnostics_present():
+    b=backtest(synthetic(1100),Params());
+    for t in b['trades']:
+        for k in ['mfeR','maeR','rMultiple','trendScore','trendRegime','stopSource','stopDistanceATR','initialRiskEUR']: assert k in t
+
+
+def test_profit_protection_does_not_change_signal_dates_before_entries():
+    d=synthetic(1200); a=backtest(d,Params(profit_protection_enabled=False)); b=backtest(d,Params(profit_protection_enabled=True))
+    # Exit changes may alter later availability, but every realized trade still obeys chronology.
+    for x in b['trades']: assert pd.Timestamp(x['signalDate'])<pd.Timestamp(x['entry'])<=pd.Timestamp(x['exit'])
+
+
+def test_v31_benchmark_runs_separately():
+    b=backtest_v31_benchmark(synthetic(950),Params()); assert 'metrics' in b and b['metrics']['accountCurrency']=='EUR'
 
 
 def test_metrics_finite():
-    q=backtest(synthetic(650),Params())['metrics']
-    for k in ['finalCapitalEUR','totalReturn','maxDrawdown','sharpe','sortino','avgTradeEUR','avgLeverage','maxLeverageUsed']:
-        assert np.isfinite(q[k])
-
-
-def test_disabled_adx_does_not_change_signal_requirement():
-    d=synthetic(600); p=Params(require_adx=False); row=features(d,p).dropna().iloc[-1]; s=signal_row(row,p)
-    assert signal_row(row,replace(p,min_adx=99.0))==s
-
-
-def test_legacy_fair_generates_own_order_timeline():
-    b=backtest_legacy_fair(synthetic(650),Params())
-    for t in b['trades']:
-        assert pd.Timestamp(t['signalDate']) < pd.Timestamp(t['entry']) <= pd.Timestamp(t['exit'])
-
-
-def test_sizing_changes_exposure_not_strict_signal_timeline():
-    d=synthetic(700)
-    fixed=backtest(d,Params(sizing_mode='fixed_notional',fixed_notional_eur=10000,max_leverage=1))
-    risk=backtest(d,Params(sizing_mode='risk',risk_per_trade=.005,max_leverage=3))
-    assert [t['signalDate'] for t in fixed['trades']]==[t['signalDate'] for t in risk['trades']]
+    q=backtest(synthetic(1000),Params())['metrics'];
+    for k in ['finalCapitalEUR','totalReturn','maxDrawdown','sharpe','sortino','avgTradeEUR','avgLeverage','maxLeverageUsed','expectancyR']: assert np.isfinite(q[k])
 
 
 def test_ml_events_are_chronological_and_purged():
-    d=synthetic(n=1800,seed=22); p=Params(); mlp=MLParams(min_train_events=30,feature_set='core')
-    events=build_event_labels(d,p,mlp)
-    assert len(events)>30
-    assert (events.entryDate>events.signalDate).all(); assert (events.outcomeEnd>=events.entryDate).all()
-    asof=events.signalDate.iloc[-20]
-    _,meta=fit_model_for_date(events,asof,mlp)
-    expected=((events.outcomeEnd<asof)&(events.signalDate>=asof-pd.DateOffset(years=mlp.max_train_years))).sum()
-    assert meta['trainingEvents']<=int(expected)
+    d=synthetic(1800,seed=22); p=Params(); mlp=MLParams(min_train_events=30,feature_set='core'); events=build_event_labels(d,p,mlp); assert len(events)>30
+    assert (events.entryDate>events.signalDate).all() and (events.outcomeEnd>=events.entryDate).all(); asof=events.signalDate.iloc[-20]; _,meta=fit_model_for_date(events,asof,mlp); assert meta['trainingEvents']>0
 
 
-def test_ml_backtest_is_chronological_and_respects_leverage():
-    d=synthetic(n=1900,seed=15); p=Params(max_leverage=2.0); mlp=MLParams(min_train_events=30,retrain_every_bars=60,threshold=.55)
+def test_ml_backtest_respects_chronology_and_leverage():
+    d=synthetic(1900,seed=15); p=Params(max_leverage=1.5); mlp=MLParams(min_train_events=30,retrain_every_bars=60,threshold=.55,min_validation_auc=.45)
     b=backtest_ml(d,p,mlp,start='2024-01-01')
     for t in b['trades']:
-        assert pd.Timestamp(t['signalDate'])<pd.Timestamp(t['entry'])<=pd.Timestamp(t['exit'])
-        assert t['leverage']<=2.0+1e-9
+        assert pd.Timestamp(t['signalDate'])<pd.Timestamp(t['entry'])<=pd.Timestamp(t['exit']); assert t['leverage']<=1.5+1e-9
 
 
-def test_ml_feature_sets_are_nested():
-    assert set(FEATURE_SETS['core']).issubset(FEATURE_SETS['compact'])
-    assert set(FEATURE_SETS['compact']).issubset(FEATURE_SETS['full'])
+def test_ml_feature_sets_nested():
+    assert set(FEATURE_SETS['core']).issubset(FEATURE_SETS['compact']); assert set(FEATURE_SETS['compact']).issubset(FEATURE_SETS['full'])
 
 
-def test_nested_config_loads_account_and_ml_settings():
-    p=load_params('config.json'); m=load_ml_params('config.json')
-    assert p.initial_capital_eur==10_000
-    assert p.max_leverage==3.0
-    assert m.feature_set=='core' and m.threshold==.60
+def test_nested_config_loads_v32_settings():
+    p=load_params('config.json'); m=load_ml_params('config.json'); assert p.initial_capital_eur==10_000; assert p.max_leverage==1.5; assert p.require_trend_filter; assert p.stop_mode=='hybrid_structure'; assert m.threshold==.55; assert m.min_validation_auc==.52

@@ -31,13 +31,14 @@ FEATURE_SETS = {"core": CORE_FEATURES, "compact": COMPACT_FEATURES, "full": FULL
 
 @dataclass(frozen=True)
 class MLParams:
-    threshold: float = 0.60
+    threshold: float = 0.55
     retrain_every_bars: int = 60
     min_train_events: int = 100
     calibration_fraction: float = 0.20
     feature_set: str = "core"
     max_train_years: int = 8
     C: float = 0.7
+    min_validation_auc: float = 0.52
 
 
 class ChronologicalPlattModel:
@@ -138,9 +139,13 @@ def build_event_labels(df: pd.DataFrame, p: Params, mlp: MLParams) -> pd.DataFra
         entry_i = i + 1
         entry_row = x.iloc[entry_i]
         entry = float(entry_row.open + adverse if side == 1 else entry_row.open - adverse)
-        stop_dist = max(p.stop_atr * float(r.atr), PIP)
-        raw_stop = entry - stop_dist if side == 1 else entry + stop_dist
-        raw_take = entry + p.take_atr * float(r.atr) if side == 1 else entry - p.take_atr * float(r.atr)
+        # Use the current V3.2 structural/volatility risk engine for event labels.
+        # The label is still future-looking by definition, but all plan inputs are frozen on the signal bar.
+        plan = position_plan(p.initial_capital_eur, entry, side, float(r.atr), r, p)
+        if not plan.get("valid", False):
+            continue
+        raw_stop = float(plan["stopLoss"])
+        raw_take = float(plan["takeProfit"])
         exit_px = None
         exit_i = min(entry_i + p.max_holding_bars, len(x)-1)
         reason = "TIME"
@@ -193,6 +198,9 @@ def current_ml_decision(df: pd.DataFrame, p: Params, mlp: MLParams) -> dict:
     model, meta = fit_model_for_date(events, x.index[-1], mlp)
     if model is None:
         return {"candidate": True, "accepted": False, "side": side, "probability": None, **meta}
+    auc = meta.get("auc")
+    if auc is None or not np.isfinite(auc) or auc < mlp.min_validation_auc:
+        return {"candidate": True, "accepted": False, "side": side, "probability": None, "status": "MODEL_HEALTH_GATE", **meta}
     feat_names = FEATURE_SETS[mlp.feature_set]
     row = pd.DataFrame([_candidate_features(r, side, feat_names)], index=[x.index[-1]])
     prob = float(model.predict_proba(row)[0])
@@ -288,9 +296,11 @@ def backtest_ml(df: pd.DataFrame, p: Params, mlp: MLParams, start=None, end=None
                     model, model_meta = fit_model_for_date(events, x.index[i], mlp)
                     last_fit_i = i
                 if model is not None:
+                    auc = model_meta.get("auc")
+                    healthy = auc is not None and np.isfinite(auc) and auc >= mlp.min_validation_auc
                     row_df = pd.DataFrame([_candidate_features(r, side, feat_names)], index=[x.index[i]])
-                    prob = float(model.predict_proba(row_df)[0])
-                    accepted = prob >= mlp.threshold
+                    prob = float(model.predict_proba(row_df)[0]) if healthy else float("nan")
+                    accepted = bool(healthy and prob >= mlp.threshold)
                     if accepted: accepted_count += 1
                     else: rejected_count += 1
                     prediction_log.append({"signalDate": str(x.index[i]), "side": side, "probability": prob,

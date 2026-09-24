@@ -1,77 +1,88 @@
-# Model methodology V3.1
+# EUR/USD V3.2 — Trend + Structural Risk Engine
 
-## Objective
+## Current model
 
-Separate four questions that were previously mixed:
+The production/research dashboard shows **only V3.2**. Historical V3.1 outputs are kept only under `reports/input-v3.1/` for audit and are not part of the live UI.
 
-1. Does the technical signal have directional edge?
-2. Does ML improve candidate selection?
-3. Does sizing improve capital efficiency without unacceptable drawdown?
-4. Does the result survive time, costs and parameter perturbations?
+### 1. Candidate direction
 
-## Account accounting
+Long candidate:
+- RSI > configured long threshold
+- close > SMA50
+- MACD histogram > 0
 
-Account currency: EUR.
+Short candidate is symmetric.
 
-For EUR/USD, base units are EUR. A trade of `U` units therefore has approximately `U EUR` notional. Quote-currency P&L is:
+### 2. Trend quality / regime
 
-`PnL_USD = (exit - entry) * units * side`
+Each candidate receives a 0–5 trend score from:
+- price vs EMA200
+- EMA50 vs EMA200
+- EMA50 slope over N bars
+- directional DMI (+DI vs -DI)
+- ADX above threshold
 
-and account P&L is converted at exit:
+A low-ADX + flat-EMA condition is classified as range-like and rejected for the momentum strategy.
 
-`PnL_EUR = PnL_USD / exit`.
+### 3. Stop construction
 
-## Risk sizing
+The initial stop is the farther of:
+- volatility stop = dynamic ATR multiple
+- recent market structure + ATR buffer
 
-For each candidate:
+The stop must remain within `maxStopATR`. If market structure requires a wider stop, the trade is skipped rather than forcing a poor stop or increasing risk.
 
-`risk_budget_eur = current_equity_eur * applied_risk_pct`
+ATR multiple changes with a past-only volatility regime:
+- low volatility
+- normal volatility
+- high volatility
 
-The program estimates EUR loss per unit at the configured stop and chooses units so that stop loss is near that budget, then applies:
+### 4. Target
 
-- lot-step rounding;
-- minimum units;
-- absolute-unit cap if configured;
-- `maxLeverage * current_equity` notional cap.
+Take-profit is defined as a multiple of the **actual stop distance** (`targetRR`), preserving a consistent R framework when structural stops widen or narrow.
 
-Adaptive risk scales the base risk with realized volatility. ML confidence may scale risk only after the candidate passes the ML threshold.
+### 5. Position sizing
 
-## Technical baseline
+EUR account equity is the base. Units are calculated from:
+- current equity
+- target risk %
+- exact EUR loss at the stop
+- volatility scaling
+- trend-quality scaling
+- maximum leverage cap
 
-Strict directional signal:
+The dashboard reports units, lots, EUR notional, EUR risk, effective leverage and whether leverage is used.
 
-- LONG = RSI > rsiLong AND Close > SMA50 AND MACD histogram > 0.
-- SHORT = symmetric conditions.
+### 6. Execution chronology
 
-Signal is observed at close and cannot fill until next open.
+- Signal uses completed close t.
+- Trend, ATR, structure, volatility and risk inputs are frozen at close t.
+- Entry occurs at open t+1 plus modeled spread/slippage.
+- SL/TP checks use daily High/Low.
+- If SL and TP touch in the same daily candle, SL is assumed first.
 
-## ML challenger
+### 7. Profit protection
 
-The broad candidate generator lowers entry strictness and asks ML whether the setup is worth trading. The model uses only features observable at the signal close.
+Delayed breakeven/trailing is implemented but disabled in the default configuration because earlier trailing tests harmed results. Research can enable it after a position has already earned a configurable R multiple. Stop changes take effect on the next bar only.
 
-Meta-label outcome is generated using the same next-open execution and barrier logic used by the strategy. `outcomeEnd` records when that label becomes knowable. A training sample may only contain events with `outcomeEnd < predictionDate`.
+### 8. Diagnostics
 
-This purge rule prevents a trade whose result finishes in the future from leaking into a prediction made today.
+Every trade records:
+- R multiple
+- MAE in R
+- MFE in R
+- winner capture ratio
+- trend score/regime
+- volatility regime
+- structural vs ATR stop source
+- stop distance in ATR
 
-## Why logistic regression first
+`stop_diagnostics.py` measures how often an SL would subsequently have reached its original TP within 3, 5 and 10 sessions.
 
-A small regularized logistic model was chosen deliberately before neural networks/XGBoost because:
+### 9. Machine learning
 
-- event count is limited;
-- price-derived indicators are correlated;
-- probability calibration matters more than raw classification accuracy;
-- coefficients and failure modes are easier to audit;
-- it creates a clean baseline against which more complex ML can later be justified.
+ML is **not part of the current production signal**. It remains a research-only meta-label challenger. A validation AUC health gate makes the model abstain when its most recent chronological validation has insufficient discrimination.
 
-Nested feature sets test whether extra variables actually improve out-of-sample results.
+### 10. Promotion rule
 
-## Validation hierarchy
-
-1. Unit tests / no-look-ahead tests.
-2. 2026 same-sample comparison.
-3. Cost and parameter sensitivity.
-4. Annual walk-forward strict model.
-5. Annual ML out-of-sample comparison.
-6. Only then consider promotion of ML or additional complexity.
-
-No script automatically rewrites production parameters based on whichever 2026 variant has the highest return.
+No 2026 winner is automatically promoted. A modification should improve a combination of return, expectancy, Sharpe/Sortino, PF and drawdown and should remain credible in fixed-architecture annual walk-forward and parameter robustness tests.

@@ -1,82 +1,50 @@
-name: Full research suite
-
+name: Full V3.2 research suite
 on:
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   research:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run tests
+      - run: pip install -r requirements.txt
+      - name: Tests
         run: pytest -q
-
-      - name: Freeze exact 10-year OHLC research sample
-        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out /tmp/research-dashboard.json --market-csv-out data/research_10y.csv
-
-      - name: Fair 2026 model comparison
+      - name: Freeze exact 10-year EURUSD OHLC
+        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/research_10y.csv
+      - name: V3.1 benchmark vs V3.2 current
         run: python scripts/backtest_2026.py --csv data/research_10y.csv --start 2026-01-01
-
-      - name: Return attribution - sizing, leverage, exits and ML
+      - name: Stop MAE MFE and false-stop diagnostics
+        run: python scripts/stop_diagnostics.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Component ablation
+        run: python scripts/v32_ablation.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Return and risk attribution
         run: python scripts/improvement_research.py --csv data/research_10y.csv --start 2026-01-01
-
-      - name: Baseline parameter robustness
+      - name: V3.2 structural robustness
         run: python scripts/robustness_2026.py --csv data/research_10y.csv --start 2026-01-01
-
-      - name: Baseline annual walk-forward
+      - name: Frozen annual walk-forward
         run: python scripts/walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-
-      - name: Fixed-architecture ML annual walk-forward
+      - name: ML research-only annual walk-forward
         run: python scripts/ml_walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-
-      - name: ML feature ablation and threshold sensitivity
+      - name: ML health/feature research
         run: python scripts/ml_research.py --csv data/research_10y.csv --start 2026-01-01
-
-      - name: Upload complete research artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: eurusd-full-research
-          path: |
-            reports/backtest_2026.json
-            reports/backtest_2026_comparison.csv
-            reports/improvement_research.csv
-            reports/improvement_research.json
-            reports/robustness_2026.csv
-            reports/walk_forward.csv
-            reports/walk_forward.json
-            reports/ml_walk_forward.csv
-            reports/ml_walk_forward.json
-            reports/ml_research.csv
-            reports/ml_research.json
-            data/research_10y.csv
-
-      - name: Commit research outputs to repository
+      - name: Commit refreshed research outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/backtest_2026.json \
-                  reports/backtest_2026_comparison.csv \
-                  reports/improvement_research.csv \
-                  reports/improvement_research.json \
-                  reports/robustness_2026.csv \
-                  reports/walk_forward.csv \
-                  reports/walk_forward.json \
-                  reports/ml_walk_forward.csv \
-                  reports/ml_walk_forward.json \
-                  reports/ml_research.csv \
-                  reports/ml_research.json \
-                  data/research_10y.csv
-          git diff --cached --quiet || git commit -m "chore: refresh full EURUSD research outputs"
+          git add data.json data.equity.csv data/research_10y.csv reports/*.csv reports/*.json
+          git diff --cached --quiet || git commit -m "research: refresh V3.2 trend and structural-risk results"
           git push
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eurusd-v32-full-research
+          path: |
+            data/research_10y.csv
+            data.json
+            reports/*.csv
+            reports/*.json

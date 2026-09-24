@@ -1,37 +1,22 @@
-# Project status
+# Project status — V3.2
 
-## Ready for GitHub
+Implemented:
+- current-only dashboard and trade history
+- EUR account capital and dynamic position sizing
+- trend score / market regime
+- EMA50/EMA200 / slope / ADX / DMI confirmation
+- range rejection
+- hybrid structure + volatility stop
+- maximum valid stop distance
+- volatility-regime ATR scaling
+- target based on R
+- quality-aware risk sizing
+- optional delayed breakeven/trailing (research switch)
+- MAE/MFE/R/capture diagnostics
+- post-stop false-stop analysis
+- V3.2 ablation and robustness grid
+- frozen annual walk-forward
+- ML validation health gate; ML remains research-only
+- 21 automated tests
 
-- Account equity: EUR.
-- Default initial equity: €10,000; editable in `config.json`.
-- Dynamic risk sizing: enabled.
-- Explicit leverage calculation and configurable cap: enabled.
-- No-leverage alternative: enabled.
-- Strict technical baseline: enabled.
-- ML meta-label challenger: enabled.
-- Chronological label purge/calibration: enabled.
-- 2025/prior-history indicator warm-up with 2026 P&L start: enabled.
-- V1 fair comparison: enabled.
-- Robustness grid: enabled.
-- Exit research: enabled.
-- Strict walk-forward: enabled.
-- ML annual walk-forward: enabled.
-- GitHub Pages dashboard: enabled.
-- Automated weekday refresh: enabled.
-
-## Local verification
-
-- Python compile check: passed.
-- Pytest: 17/17 passed.
-- End-to-end scripts tested with synthetic OHLC for software validation.
-
-Synthetic results are intentionally not stored as strategy evidence. The first GitHub Action run downloads real EUR/USD OHLC and generates the actual 2026 reports.
-
-## Important next files after GitHub Action
-
-- `data/eurusd_daily.csv`
-- `reports/backtest_2026_comparison.csv`
-- `reports/robustness_2026.csv`
-- `reports/ml_research.csv`
-- `reports/walk_forward.csv`
-- `reports/ml_walk_forward.csv`
+Next decision gate: run the GitHub Full V3.2 research suite on real EUR/USD OHLC and compare V3.2 with the frozen V3.1 benchmark across annual out-of-sample slices. Do not promote parameter changes from 2026 alone.
