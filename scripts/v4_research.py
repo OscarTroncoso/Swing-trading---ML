@@ -73,13 +73,16 @@ def main():
     p = load_v4_params(ROOT / args.config)
 
     variants = {
-        "v4_thesis_rr1.8": p,
-        "v4_barrier_only_rr1.8": replace(p, thesis_exit_enabled=False),
+        "v4_adaptive_cp5_rr1.8": p,
+        "v4_barrier_only_rr1.8": replace(p, exit_policy="barrier_only", thesis_exit_enabled=False),
+        "v4_immediate_thesis_rr1.8": replace(p, exit_policy="thesis"),
+        "v4_checkpoint_3": replace(p, checkpoint_bars=3),
+        "v4_checkpoint_5": replace(p, checkpoint_bars=5),
+        "v4_checkpoint_8": replace(p, checkpoint_bars=8),
+        "v4_cp5_rr1.2": replace(p, target_rr=1.2),
+        "v4_cp5_rr1.5": replace(p, target_rr=1.5),
+        "v4_cp5_rr2.0": replace(p, target_rr=2.0),
         "v4_no_hard_trend_reject": replace(p, hard_trend_reject=False),
-        "v4_rr1.0": replace(p, target_rr=1.0),
-        "v4_rr1.2": replace(p, target_rr=1.2),
-        "v4_rr1.5": replace(p, target_rr=1.5),
-        "v4_rr2.0": replace(p, target_rr=2.0),
         "v4_atr_tighter": replace(p, stop_atr_low_vol=1.20, stop_atr_normal=1.35, stop_atr_high_vol=1.55),
         "v4_atr_wider": replace(p, stop_atr_low_vol=1.50, stop_atr_normal=1.70, stop_atr_high_vol=1.90),
         "v4_lev_cap_1x": replace(p, max_trade_leverage=1.0),
