@@ -1,0 +1,93 @@
+{
+  "data_window": {
+    "start": "2026-05-21",
+    "end": "2026-09-23",
+    "observations": 90
+  },
+  "reported_original_1y": {
+    "initialCapital": 10000.0,
+    "finalCapital": 10615.97,
+    "totalReturn": 6.16,
+    "winRate": 45.0,
+    "maxDrawdown": 2.79,
+    "profitFactor": 1.6,
+    "totalTrades": 20
+  },
+  "local_90d_models": [
+    {
+      "model": "Original exact (90d)",
+      "final_capital": 9818.435907363892,
+      "return_pct": -1.815640926361084,
+      "trades": 5,
+      "win_rate_pct": 20.0,
+      "profit_factor": 0.43413534058062553,
+      "max_drawdown_pct": 1.8606901168823242,
+      "avg_pnl": -36.31281852722168,
+      "sharpe": NaN,
+      "sortino": NaN,
+      "avg_win": NaN,
+      "avg_loss": NaN,
+      "exposure_pct": NaN
+    },
+    {
+      "model": "Original corrected: next-bar + 0.8 pip",
+      "final_capital": 9858.044838333122,
+      "return_pct": -1.4195516166687794,
+      "trades": 7,
+      "win_rate_pct": 28.57142857142857,
+      "profit_factor": 0.5340959584047422,
+      "max_drawdown_pct": 1.7718371891047968,
+      "avg_pnl": -20.27930880955368,
+      "sharpe": -1.9390604326186234,
+      "sortino": -2.228994733614311,
+      "avg_win": 81.36619491577068,
+      "avg_loss": -60.937510299683424,
+      "exposure_pct": 92.5
+    },
+    {
+      "model": "Hybrid regime, fixed 10k",
+      "final_capital": 9786.655585861203,
+      "return_pct": -2.1334441413879746,
+      "trades": 3,
+      "win_rate_pct": 0.0,
+      "profit_factor": 0.0,
+      "max_drawdown_pct": 2.1334441413879746,
+      "avg_pnl": -71.11480471293213,
+      "sharpe": -4.543158610357176,
+      "sortino": -2.8103699050500985,
+      "avg_win": 0.0,
+      "avg_loss": -71.11480471293213,
+      "exposure_pct": 32.5
+    },
+    {
+      "model": "Hybrid regime + 0.5% risk sizing",
+      "final_capital": 9705.928050019487,
+      "return_pct": -2.9407194998051223,
+      "trades": 3,
+      "win_rate_pct": 0.0,
+      "profit_factor": 0.0,
+      "max_drawdown_pct": 2.9407194998051223,
+      "avg_pnl": -98.0239833268373,
+      "sharpe": -4.51631119849743,
+      "sortino": -2.733092856562984,
+      "avg_win": 0.0,
+      "avg_loss": -98.0239833268373,
+      "exposure_pct": 32.5
+    }
+  ],
+  "robustness": {
+    "configs": 108,
+    "profitable_share_pct": 0.0,
+    "positive_sharpe_share_pct": 0.0,
+    "median_return_pct": -2.42051887258809,
+    "return_p10_pct": -3.557932628886007,
+    "return_p90_pct": -1.5674918627397694,
+    "median_max_drawdown_pct": 2.5829345670563555,
+    "median_trades": 2.0
+  },
+  "limitations": [
+    "Only 90 daily closes are retained in data.json.",
+    "No OHLC, so true ATR and intraday stop/take-profit ordering cannot be tested.",
+    "Long-horizon walk-forward requires the full historical dataset."
+  ]
+}

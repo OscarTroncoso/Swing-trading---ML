@@ -1,0 +1,167 @@
+{
+  "archived_data": {
+    "observations": 90,
+    "start": "2026-05-21",
+    "end": "2026-09-23",
+    "warmup_bars": 50,
+    "tradable_bars": 40,
+    "tradable_start": "2026-07-30"
+  },
+  "baseline_momentum": {
+    "model": "momentum",
+    "return_pct": 1.9893582839965118,
+    "final_capital": 10198.935828399652,
+    "trades": 6,
+    "win_rate_pct": 83.33333333333334,
+    "profit_factor": 7.1644904783552805,
+    "max_drawdown_pct": 0.3746400909423908,
+    "sharpe": 3.385623689232971,
+    "avg_pnl": 33.155971399942224,
+    "exposure_pct": 75.0
+  },
+  "trades": [
+    {
+      "entry": "2026-08-03",
+      "exit": "2026-08-10",
+      "side": 1,
+      "pnl": 11.606110763549005,
+      "reason": "TIME"
+    },
+    {
+      "entry": "2026-08-11",
+      "exit": "2026-08-18",
+      "side": 1,
+      "pnl": 35.5767147064201,
+      "reason": "TIME"
+    },
+    {
+      "entry": "2026-08-19",
+      "exit": "2026-08-20",
+      "side": 1,
+      "pnl": 93.55296058654704,
+      "reason": "TP"
+    },
+    {
+      "entry": "2026-08-21",
+      "exit": "2026-08-28",
+      "side": 1,
+      "pnl": -32.27125244140705,
+      "reason": "TIME"
+    },
+    {
+      "entry": "2026-08-31",
+      "exit": "2026-09-07",
+      "side": 1,
+      "pnl": 24.23514289855877,
+      "reason": "TIME"
+    },
+    {
+      "entry": "2026-09-18",
+      "exit": "2026-09-23",
+      "side": -1,
+      "pnl": 66.23615188598552,
+      "reason": "TP"
+    }
+  ],
+  "exit_contribution": [
+    {
+      "reason": "TIME",
+      "trades": 4,
+      "pnl": 39.14671592712082,
+      "avg_pnl": 9.786678981780206,
+      "pnl_share_pct": 19.678062137945705
+    },
+    {
+      "reason": "TP",
+      "trades": 2,
+      "pnl": 159.78911247253257,
+      "avg_pnl": 79.89455623626628,
+      "pnl_share_pct": 80.32193786205431
+    }
+  ],
+  "sizing_sensitivity": [
+    {
+      "sizing": "fixed_10k",
+      "risk_pct": null,
+      "return_pct": 1.9893582839965118,
+      "max_drawdown_pct": 0.3746400909423908,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.1644904783552805,
+      "sharpe": 3.385623689232971,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_0.25pct",
+      "risk_pct": 0.25,
+      "return_pct": 1.4297904585855337,
+      "max_drawdown_pct": 0.23518637453788793,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.907743382588476,
+      "sharpe": 3.500130947837149,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_0.50pct",
+      "risk_pct": 0.5,
+      "return_pct": 2.871436574339503,
+      "max_drawdown_pct": 0.47024854227675217,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.868475530292721,
+      "sharpe": 3.5033255794471754,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_0.75pct",
+      "risk_pct": 0.75,
+      "return_pct": 4.32495889212674,
+      "max_drawdown_pct": 0.7051865032165483,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.829714622713824,
+      "sharpe": 3.5065170891906248,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_1.00pct",
+      "risk_pct": 1.0,
+      "return_pct": 5.790377402900226,
+      "max_drawdown_pct": 0.9400002573572874,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.79144977448135,
+      "sharpe": 3.5097055390476415,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_1.50pct",
+      "risk_pct": 1.5,
+      "return_pct": 8.756980168662597,
+      "max_drawdown_pct": 1.4092551452415947,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.716366197361744,
+      "sharpe": 3.516073505443419,
+      "exposure_pct": 75.0
+    },
+    {
+      "sizing": "risk_2.00pct",
+      "risk_pct": 2.0,
+      "return_pct": 9.867104413100414,
+      "max_drawdown_pct": 1.7655280059828526,
+      "trades": 6,
+      "win_rate_pct": 83.33333333333334,
+      "profit_factor": 7.115104724252966,
+      "sharpe": 3.4270836465832284,
+      "exposure_pct": 75.0
+    }
+  ],
+  "interpretation": [
+    "The quoted +1.99% comes from only 40 tradable daily bars after the SMA50 warm-up, not from 90 fully tradable sessions.",
+    "Two TP trades generated about 80% of total P&L in this archived sample.",
+    "Four time exits generated the remaining ~20%; alternative close-only trailing/breakeven/fade screens did not beat the 5-bar baseline in the archived sample.",
+    "Risk sizing increases return by using more notional exposure on the exact same signals; it does not prove a stronger forecasting edge."
+  ]
+}

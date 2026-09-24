@@ -1,0 +1,44 @@
+name: Full research suite
+on:
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - name: Freeze exact 10-year OHLC research sample
+        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out /tmp/research-dashboard.json --market-csv-out data/research_10y.csv
+      - name: Fair 2026 model comparison
+        run: python scripts/backtest_2026.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Return attribution - sizing, leverage, exits and ML
+        run: python scripts/improvement_research.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Baseline parameter robustness
+        run: python scripts/robustness_2026.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Baseline annual walk-forward
+        run: python scripts/walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
+      - name: Fixed-architecture ML annual walk-forward
+        run: python scripts/ml_walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
+      - name: ML feature ablation and threshold sensitivity
+        run: python scripts/ml_research.py --csv data/research_10y.csv --start 2026-01-01
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eurusd-full-research
+          path: |
+            reports/backtest_2026.json
+            reports/backtest_2026_comparison.csv
+            reports/improvement_research.csv
+            reports/improvement_research.json
+            reports/robustness_2026.csv
+            reports/walk_forward.csv
+            reports/walk_forward.json
+            reports/ml_walk_forward.csv
+            reports/ml_walk_forward.json
+            reports/ml_research.csv
+            reports/ml_research.json
+            data/research_10y.csv

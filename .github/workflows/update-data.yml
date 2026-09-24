@@ -1,0 +1,30 @@
+name: Update EURUSD dashboard
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 22 * * 1-5'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Test engine
+        run: pytest -q
+      - name: Download one exact 10-year OHLC sample and update dashboard
+        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/eurusd_daily.csv
+      - name: Fair 2026 comparison on the exact same OHLC
+        run: python scripts/backtest_2026.py --csv data/eurusd_daily.csv --start 2026-01-01
+      - name: Commit refreshed outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json data.equity.csv data.ml_equity.csv data/eurusd_daily.csv reports/backtest_2026.json reports/backtest_2026_comparison.csv
+          git diff --cached --quiet || git commit -m "chore: refresh EURUSD research dashboard"
+          git push

@@ -1,0 +1,7 @@
+mode,best_return_pct,max_drawdown_pct,trades,win_rate_pct,profit_factor,sharpe,notes
+baseline_time_5,1.989358,0.374640,6,83.333333,7.164490,3.385624,"5-bar time exit; archived close-only diagnostic"
+trailing_with_time_5,1.989358,0.374640,6,83.333333,7.164490,3.385624,"best tested trailing settings did not improve baseline"
+breakeven_time_5,1.702755,0.406132,6,66.666667,5.640115,3.026921,"moving stop to break-even reduced return"
+fade_plus_trailing,1.412112,0.830176,5,80.000000,3.116653,2.344058,"momentum-fade plus trailing reduced return"
+trailing_only,1.103864,1.019101,2,100.000000,999.0,1.810173,"very small sample; lower return and higher drawdown"
+momentum_fade,0.955328,1.028413,3,66.666667,1.958401,1.573253,"waiting for momentum fade reduced return"

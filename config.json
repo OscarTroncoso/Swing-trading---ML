@@ -1,0 +1,62 @@
+{
+  "account": {
+    "currency": "EUR",
+    "initialCapitalEUR": 10000.0
+  },
+  "risk": {
+    "sizingMode": "adaptive_risk",
+    "fixedNotionalEUR": 10000.0,
+    "baseRiskPerTrade": 0.005,
+    "minRiskPerTrade": 0.0025,
+    "maxRiskPerTrade": 0.01,
+    "maxLeverage": 3.0,
+    "lotStepUnits": 1000.0,
+    "minUnits": 1000.0,
+    "absoluteMaxUnits": 0.0,
+    "volatilityTarget": 0.08,
+    "volScaleMin": 0.65,
+    "volScaleMax": 1.25
+  },
+  "execution": {
+    "spreadPips": 0.8,
+    "slippagePipsPerSide": 0.1,
+    "commissionPerMillionPerSideEUR": 0.0
+  },
+  "strategy": {
+    "rsiPeriod": 14,
+    "rsiLong": 55.0,
+    "rsiShort": 45.0,
+    "smaTrend": 50,
+    "bbPeriod": 20,
+    "atrPeriod": 14,
+    "adxPeriod": 14,
+    "stopATR": 1.5,
+    "takeATR": 2.2,
+    "maxHoldingBars": 5,
+    "requireMACD": true,
+    "requireADX": false,
+    "minADX": 18.0,
+    "enableRangeModule": false,
+    "rangeADXMax": 17.0,
+    "rangeZ": 1.5,
+    "rangeRSILow": 35.0,
+    "rangeRSIHigh": 65.0
+  },
+  "ml": {
+    "enabled": true,
+    "liveMode": "challenger",
+    "threshold": 0.60,
+    "confidenceReference": 0.78,
+    "retrainEveryBars": 60,
+    "minTrainEvents": 100,
+    "calibrationFraction": 0.20,
+    "featureSet": "core",
+    "maxTrainYears": 8,
+    "C": 0.7
+  },
+  "backtest": {
+    "warmupStart": "2025-01-01",
+    "evaluationStart": "2026-01-01",
+    "downloadHistory": "10y"
+  }
+}

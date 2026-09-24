@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUR/USD Swing Trading Research v3.1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --border-color: #334155;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--accent-blue);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card h5 {
+            margin-top: 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        th {
+            color: var(--text-muted);
+        }
+        .badge-buy {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+        .badge-sell {
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>💱 EUR/USD Swing Trading Research v3.1</h1>
+                <p style="margin: 5px 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Momentum Baseline + ML Challenger • EUR Equity Risk Sizing • Leverage-Aware • Walk-Forward</p>
+            </div>
+            <div>
+                <small style="color: var(--text-muted);">Pair: <strong>EUR/USD</strong> | Source: Yahoo Finance &nbsp;•&nbsp; <a href="trades.html" style="color:#93c5fd">Trade Journal</a></small>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h5>Current Rate</h5>
+                <p id="current-price" class="metric-value">-</p>
+            </div>
+            <div class="card">
+                <h5>Composite Signal</h5>
+                <p id="composite-signal" class="metric-value">-</p>
+            </div>
+            <div class="card">
+                <h5>Stop Loss (Volatility)</h5>
+                <p id="stop-loss" class="metric-value" style="color: var(--accent-red);">-</p>
+            </div>
+            <div class="card">
+                <h5>Take Profit (Target)</h5>
+                <p id="take-profit" class="metric-value" style="color: var(--accent-green);">-</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 25px;">
+            <h5>💶 Position Sizing & ML Decision</h5>
+            <table>
+                <tbody>
+                    <tr><td><strong>Account equity:</strong></td><td id="pos-equity">-</td><td><strong>Applied risk:</strong></td><td id="pos-risk">-</td></tr>
+                    <tr><td><strong>Recommended size:</strong></td><td id="pos-size">-</td><td><strong>Effective leverage:</strong></td><td id="pos-leverage">-</td></tr>
+                    <tr><td><strong>No-leverage alternative:</strong></td><td id="pos-no-lev">-</td><td><strong>ML probability:</strong></td><td id="ml-prob">-</td></tr>
+                    <tr><td><strong>Candidate / decision:</strong></td><td id="ml-decision">-</td><td><strong>Leverage cap hit:</strong></td><td id="pos-cap-hit">-</td></tr>
+                    <tr><td><strong>Target gain:</strong></td><td id="pos-target">-</td><td><strong>Reward / risk:</strong></td><td id="pos-rr">-</td></tr>
+                    <tr><td><strong>Sizing decision:</strong></td><td id="pos-selection">-</td><td><strong>ML backtest:</strong></td><td id="ml-backtest">-</td></tr>
+                    <tr><td><strong>ML challenger size:</strong></td><td id="ml-pos-size">-</td><td><strong>ML leverage:</strong></td><td id="ml-pos-leverage">-</td></tr>
+                </tbody>
+            </table>
+            <p style="color:var(--text-muted);font-size:.78rem;margin-bottom:0">The sizing engine selects a risk-target position under the configured leverage cap. Leverage is reported, not hidden. ML accepts/rejects technical candidates; it does not invent direction.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 25px;">
+            <h5>📈 Price Action & Bollinger Projections</h5>
+            <div class="chart-container">
+                <canvas id="eurusdChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h5>📋 Active Swing Signals</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Action</th>
+                            <th>Price</th>
+                            <th>Stop Loss</th>
+                            <th>Take Profit</th>
+                            <th>RSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="signals-table">
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading market data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h5>⚙️ Quantitative Parameters</h5>
+                <table>
+                    <tbody>
+                        <tr><td><strong>Volatility ($\sigma$):</strong></td><td id="stat-vol">-</td></tr>
+                        <tr><td><strong>ADX (14):</strong></td><td id="stat-adx">-</td></tr>
+                        <tr><td><strong>RSI (14):</strong></td><td id="stat-rsi">-</td></tr>
+                        <tr><td><strong>MACD Momentum:</strong></td><td id="stat-macd">-</td></tr>
+                    <tr><td><strong>Sharpe (backtest):</strong></td><td id="stat-sharpe">-</td></tr>
+                        <tr><td><strong>Profit Factor:</strong></td><td id="stat-pf">-</td></tr>
+                        <tr><td><strong>Max Drawdown:</strong></td><td id="stat-dd">-</td></tr>
+                        <tr><td><strong>Total Trades:</strong></td><td id="stat-trades">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 25px;">
+            <h5>🧪 Strategy Backtesting Results (Historical Simulation)</h5><p style="color:var(--text-muted);font-size:.8rem">Window: <span id="bt-window">-</span>. Signal at close; execution next open. Stops use daily high/low.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div><small style="color: var(--text-muted);">Initial Capital</small><h4 id="bt-initial" style="margin:5px 0 0 0;">-</h4></div>
+                <div><small style="color: var(--text-muted);">Final Capital</small><h4 id="bt-final" style="margin:5px 0 0 0;">-</h4></div>
+                <div><small style="color: var(--text-muted);">Total Return</small><h4 id="bt-return" style="margin:5px 0 0 0;">-</h4></div>
+                <div><small style="color: var(--text-muted);">Win Rate</small><h4 id="bt-winrate" style="margin:5px 0 0 0;">-</h4></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Entry Date</th>
+                        <th>Exit Date</th>
+                        <th>Type</th>
+                        <th>Entry Price</th>
+                        <th>Exit Price</th>
+                        <th>Units</th>
+                        <th>Leverage</th>
+                        <th>Profit (EUR)</th>
+                    </tr>
+                </thead>
+                <tbody id="backtest-table">
+                    <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Loading backtest results...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            Research simulator. Backtests are not live execution results or financial advice. Built for GitHub Pages.
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+<script data-goatcounter="https://forex.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</html>
