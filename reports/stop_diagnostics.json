@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "trades": 12,
+    "stoppedTrades": 2,
+    "avgMFER": 0.6471666666666667,
+    "avgMAER": 0.5600833333333334,
+    "medianWinnerCaptureRatio": 0.369,
+    "falseStopRate_3dPct": 0.0,
+    "returnToEntryAfterStop_3dPct": 0.0,
+    "falseStopRate_5dPct": 0.0,
+    "returnToEntryAfterStop_5dPct": 0.0,
+    "falseStopRate_10dPct": 0.0,
+    "returnToEntryAfterStop_10dPct": 0.0
+  },
+  "definition": "False stop = SL trade whose original TP is touched within N subsequent daily bars. Daily OHLC cannot reveal intraday path ordering beyond the conservative backtest rule."
+}

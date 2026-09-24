@@ -1,5 +1,4 @@
-model,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades,mlCandidateSignals,mlAcceptedSignals,mlRejectedSignals,mlAcceptanceRatePct
-Legacy signal / fair execution / € fixed notional,EUR,10000.0,10442.01,4.4201,43.48,1.9417,1.6207,23,1.1061,1.8921,19.22,98.41,0.963,1.0,0,,,,
-V3.1 strict / € fixed notional,EUR,10000.0,10280.36,2.8036,65.22,2.9369,1.5674,23,0.8144,1.0468,12.19,64.55,0.996,1.023,9,,,,
-V3.1 strict / adaptive risk,EUR,10000.0,10224.94,2.2494,65.22,1.7783,1.7599,23,1.0272,1.3994,9.78,64.55,0.657,0.885,0,,,,
-V3.1 ML challenger / adaptive risk,EUR,10000.0,10000.0,0.0,0.0,-0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0,156.0,0.0,156.0,0.0
+model,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades,expectancyR,avgMFER,avgMAER,medianWinnerCaptureRatio,stoppedTrades,takeProfitTrades,timeExitTrades,rejectedTrendSignals,rejectedWideStops,rejectedSize
+V3.1 benchmark / adaptive risk,EUR,10000.0,10224.94,2.2494,65.22,1.7783,1.7599,23,1.0272,1.3994,9.78,64.55,0.657,0.885,0,,,,,,,,,,
+V3.2 current / adaptive quality risk,EUR,10000.0,9954.74,-0.4526,41.67,1.223,0.7758,12,-0.3327,-0.336,-3.77,35.45,0.486,0.81,0,-0.066,0.647,0.56,0.369,2.0,1.0,9.0,24.0,24.0,0.0
+V3.2 current / 1.0x fixed notional,EUR,10000.0,9873.72,-1.2628,41.67,2.2814,0.6798,12,-0.5287,-0.4726,-10.52,35.45,0.918,1.0,0,-0.066,0.647,0.56,0.369,2.0,1.0,9.0,24.0,24.0,0.0
