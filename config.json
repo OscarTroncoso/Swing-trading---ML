@@ -14,6 +14,7 @@
     "minTradeLeverage": 1.0,
     "maxTradeLeverage": 30.0,
     "leverageStep": 1.0,
+    "financingAnnualPctBorrowed": 0.04,
     "volatilityTarget": 0.08,
     "volScaleMin": 0.70,
     "volScaleMax": 1.15,
