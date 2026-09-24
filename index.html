@@ -46,7 +46,7 @@
 
 <div class="card" style="margin-bottom:18px"><h3>Precio y tendencia</h3><div class="chart"><canvas id="chart"></canvas></div></div>
 
-<div class="card" style="margin-bottom:18px"><h3>Backtest actual</h3><div class="note">Ventana: <span id="bt-window">—</span>. Una operación permanece abierta hasta SL o TP. Si el backtest termina con una posición activa, se mantiene OPEN y el retorno final usa mark-to-market.</div>
+<div class="card" style="margin-bottom:18px"><h3>Backtest actual</h3><div class="note">Ventana: <span id="bt-window">—</span>. No hay vencimiento fijo a 3/5 días. SL/TP permanecen activos y, desde el checkpoint adaptativo, la posición continúa mientras la tendencia/momentum sigan justificándola; si la tesis se invalida, sale al siguiente open. Una posición activa al final queda OPEN y se valora mark-to-market.</div>
 <div class="grid" style="margin-top:14px">
 <div><div class="label">Equity final</div><div id="bt-final" class="value">—</div></div><div><div class="label">Retorno total</div><div id="bt-return" class="value">—</div></div><div><div class="label">Win rate cerrados</div><div id="bt-win" class="value">—</div></div><div><div class="label">Profit factor</div><div id="bt-pf" class="value">—</div></div><div><div class="label">Sharpe</div><div id="bt-sharpe" class="value">—</div></div><div><div class="label">Max drawdown</div><div id="bt-dd" class="value">—</div></div><div><div class="label">Expectancy</div><div id="bt-r" class="value">—</div></div><div><div class="label">Trades</div><div id="bt-trades" class="value">—</div></div>
 </div></div>
