@@ -13,6 +13,9 @@ on:
       - '.github/workflows/research.yml'
 permissions:
   contents: write
+concurrency:
+  group: v4-research-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   research:
     runs-on: ubuntu-latest
