@@ -771,7 +771,7 @@ def current_snapshot_v4(
         "signalReason": dec.get("reason"),
         "positionPlan": plan,
         "mlAdvisory": ml_advisory,
-        "execution": "Signal at close; execution next open. No forced time exit; position remains until SL/TP.",
+        "execution": "Signal at close; execution next open. No fixed holding expiry; SL/TP stay active and adaptive thesis invalidation exits next open.",
     }
 
 
