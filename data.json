@@ -1,7 +1,7 @@
 {
   "modelVersion": "3.2.0",
   "modelName": "Trend + Structural Risk Engine",
-  "lastUpdate": "2026-09-24 16:09:38 UTC",
+  "lastUpdate": "2026-09-24 16:30:20 UTC",
   "pair": "EUR/USD",
   "accountCurrency": "EUR",
   "liveMode": "V3_2_CURRENT_ONLY",
