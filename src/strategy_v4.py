@@ -82,6 +82,12 @@ class V4Params(BaseParams):
     target_rr: float = 1.80
     max_holding_bars: int = 0  # 0 = no time exit
 
+    # Exit is never time-based. Optional thesis invalidation exits at next open.
+    thesis_exit_enabled: bool = True
+    thesis_exit_rsi_mid: float = 50.0
+    thesis_exit_strong_reversal_adx: float = 25.0
+    thesis_exit_max_alignment_score: int = 1
+
     # Profit protection remains opt-in because prior tests cut winners too early.
     profit_protection_enabled: bool = False
 
@@ -403,6 +409,41 @@ def _gap_aware_exit(r: pd.Series, side: int, stop: float, take: float) -> tuple[
     return None, None
 
 
+def thesis_invalidated_v4(r: pd.Series, side: int, p: V4Params) -> bool:
+    """Close-bar thesis invalidation; exit, if any, occurs next open."""
+    if not p.thesis_exit_enabled:
+        return False
+    if any(pd.isna(r.get(k, np.nan)) for k in ["rsi", "macd_hist", "sma50", "adx"]):
+        return False
+    if side == 1:
+        momentum_flip = float(r.rsi) < p.thesis_exit_rsi_mid and float(r.macd_hist) < 0
+        structure_flip = float(r.close) < float(r.sma50) and float(r.macd_hist) < 0
+    else:
+        momentum_flip = float(r.rsi) > p.thesis_exit_rsi_mid and float(r.macd_hist) > 0
+        structure_flip = float(r.close) > float(r.sma50) and float(r.macd_hist) > 0
+    ctx = trend_context(r, side, p)
+    strong_reversal = (
+        float(r.adx) >= p.thesis_exit_strong_reversal_adx
+        and int(ctx.get("score", 0)) <= p.thesis_exit_max_alignment_score
+    )
+    return bool(momentum_flip or structure_flip or strong_reversal)
+
+
+def _open_gap_exit(r: pd.Series, side: int, stop: float, take: float) -> tuple[str | None, float | None]:
+    o = float(r.open)
+    if side == 1:
+        if o <= stop:
+            return "SL_GAP", o
+        if o >= take:
+            return "TP_GAP", take
+    else:
+        if o >= stop:
+            return "SL_GAP", o
+        if o <= take:
+            return "TP_GAP", take
+    return None, None
+
+
 def backtest_v4(
     df: pd.DataFrame,
     p: V4Params,
@@ -428,6 +469,7 @@ def backtest_v4(
     initial_risk_price = np.nan
     fav_price = adv_price = np.nan
     pending = None
+    pending_thesis_exit = False
     trades: list[dict] = []
     equity_vals: list[float] = []
     equity_dates: list[pd.Timestamp] = []
@@ -492,7 +534,21 @@ def backtest_v4(
                 fav_price = min(float(fav_price), float(r.low))
                 adv_price = max(float(adv_price), float(r.high))
 
-            reason, raw_exit = _gap_aware_exit(r, position, stop, take)
+            reason = raw_exit = None
+            # A thesis invalidated on the previous close exits at today's open.
+            # An overnight stop/target gap has priority because the market reached it before
+            # the discretionary next-open thesis exit can be executed.
+            if pending_thesis_exit:
+                gap_reason, gap_px = _open_gap_exit(r, position, stop, take)
+                if gap_reason is not None:
+                    reason, raw_exit = gap_reason, gap_px
+                else:
+                    reason, raw_exit = "THESIS_INVALIDATED", float(r.open)
+                pending_thesis_exit = False
+
+            if reason is None:
+                reason, raw_exit = _gap_aware_exit(r, position, stop, take)
+
             if reason is not None:
                 adverse = half_spread + slip
                 # For a stop gap, the open already represents the gap; only execution friction is added.
@@ -551,6 +607,12 @@ def backtest_v4(
                 active_plan = None
                 financing_accum = 0.0
                 entry_commission = 0.0
+                pending_thesis_exit = False
+
+        # If the position survived the whole daily bar, evaluate whether the entry thesis
+        # has broken. This never exits at the same close; it schedules the next-open exit.
+        if position and not pending_thesis_exit and i < last_i:
+            pending_thesis_exit = thesis_invalidated_v4(r, position, p)
 
         mtm = capital
         if position:
