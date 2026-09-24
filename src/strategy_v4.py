@@ -287,6 +287,27 @@ def position_plan_v4(
     gain_eur = pnl_eur(entry, take_fill, notional_eur, side) - 2 * _commission_notional(notional_eur, p)
     account_exposure_x = notional_eur / equity_eur
 
+    alt_levels = sorted(set([
+        float(p.min_trade_leverage), 1.0, 5.0, 10.0, 20.0, 30.0, float(leverage)
+    ]))
+    alternatives = []
+    for lev in alt_levels:
+        if lev < p.min_trade_leverage - 1e-9 or lev > p.max_trade_leverage + 1e-9:
+            continue
+        n = margin_eur * lev
+        risk_eur = risk_for(lev, margin_eur)
+        target_eur = pnl_eur(entry, take_fill, n, side) - 2 * _commission_notional(n, p)
+        alternatives.append({
+            "leverage": round(lev, 2),
+            "positionEUR": round(margin_eur, 2),
+            "notionalEUR": round(n, 2),
+            "riskAtStopEUR": round(risk_eur, 2),
+            "riskAtStopPct": round(risk_eur/equity_eur*100, 3),
+            "targetGainEUR": round(target_eur, 2),
+            "withinRiskBudget": bool(risk_eur <= risk_budget + 1e-9),
+            "selected": bool(abs(lev-leverage) < 1e-9),
+        })
+
     return {
         "valid": True,
         "rejectionReason": None,
@@ -304,7 +325,8 @@ def position_plan_v4(
         "targetGainEUR": round(gain_eur, 2),
         "rewardRisk": round(gain_eur / actual_risk, 3) if actual_risk > 0 else 0.0,
         "riskBudgetUtilizationPct": round(actual_risk / risk_budget * 100, 2) if risk_budget > 0 else 0.0,
-        "leverageSelection": "RISK_BUDGET_OPTIMAL",
+        "leverageSelection": "HIGHEST_LEVERAGE_WITHIN_RISK_BUDGET",
+        "leverageAlternatives": alternatives,
         "qualityMultiplier": round(quality, 3),
         "trend": trend,
         "mlProbability": None if ml_probability is None else round(float(ml_probability), 4),
