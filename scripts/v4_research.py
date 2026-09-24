@@ -1,4 +1,4 @@
-"""V4 research matrix (final branch validation).
+"""V4 research matrix (final thesis-exit branch validation).
 
 The script avoids choosing a winner from one 2026 number. It evaluates simple structural
 choices on the same frozen OHLC sample and reports:
