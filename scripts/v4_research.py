@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.config import load_v4_params
-from src.strategy_engine import load_csv
+from src.strategy_engine import load_csv, backtest_v31_benchmark
 from src.strategy_v4 import V4Params, backtest_v4
 from src.ml_v4 import MLV4Params, build_probability_maps
 
@@ -103,6 +103,18 @@ def main():
 
     full_start = f"{args.first_year}-01-01"
     full_end = f"{args.last_year}-12-31"
+
+    # Frozen V3.1 time-exit benchmark on the same €1k account and exact OHLC sample.
+    v31_full = backtest_v31_benchmark(df, p, start=full_start, end=full_end)
+    detail_rows.append(metric_row("v31_time_exit_benchmark", v31_full, f"{args.first_year}-{args.last_year}"))
+    v31_years = []
+    for y in range(args.first_year, args.last_year + 1):
+        rr = backtest_v31_benchmark(df, p, start=f"{y}-01-01", end=f"{y}-12-31")
+        v31_years.append({"year": y, **rr["metrics"]})
+    v31_years = pd.DataFrame(v31_years)
+    v31_years.insert(0, "variant", "v31_time_exit_benchmark")
+    v31_years.to_csv(ROOT / f"{args.out_prefix}_v31_time_exit_benchmark_annual.csv", index=False)
+    summary_rows.append(summarize_years("v31_time_exit_benchmark", v31_years))
 
     for name, vp in variants.items():
         full = backtest_v4(df, vp, start=full_start, end=full_end)
