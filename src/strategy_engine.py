@@ -671,7 +671,9 @@ def _v31_params_from_current(p: Params, sizing_mode: str = "adaptive_risk"):
     return V31Params(
         initial_capital_eur=p.initial_capital_eur, sizing_mode=sizing_mode, fixed_notional_eur=p.fixed_notional_eur,
         risk_per_trade=0.005, min_risk_per_trade=0.0025, max_risk_per_trade=0.0100, max_leverage=3.0,
-        lot_step_units=p.lot_step_units, min_units=p.min_units, absolute_max_units=p.absolute_max_units,
+        # Research benchmark is normalized to a small EUR 1k account; allow fine notional granularity
+        # so the legacy risk budget does not collapse to zero trades merely because of a 1k-unit lot step.
+        lot_step_units=1.0, min_units=1.0, absolute_max_units=p.absolute_max_units,
         volatility_target=0.08, vol_scale_min=0.65, vol_scale_max=1.25, spread_pips=p.spread_pips,
         slippage_pips_per_side=p.slippage_pips_per_side, commission_per_million_per_side_eur=p.commission_per_million_per_side_eur,
         rsi_period=14, rsi_long=55.0, rsi_short=45.0, sma_trend=50, bb_period=20, atr_period=14, adx_period=14,
