@@ -6,7 +6,7 @@ from src.strategy_engine import (Params, backtest, backtest_v31_benchmark, featu
                                  signal_decision, trend_context, pnl_eur, adaptive_risk_pct, dynamic_stop_atr)
 from src.ml_meta import MLParams, build_event_labels, fit_model_for_date, backtest_ml, FEATURE_SETS
 from src.config import load_params, load_ml_params, load_v4_params
-from src.strategy_v4 import V4Params, backtest_v4, position_plan_v4, signal_decision_v4
+from src.strategy_v4 import V4Params, backtest_v4, position_plan_v4, signal_decision_v4, thesis_invalidated_v4
 from src.ml_v4 import MLV4Params, build_v4_events, fit_best_v4_model
 
 
@@ -129,6 +129,8 @@ def test_nested_config_loads_v4_settings():
     assert p.min_trade_leverage==1.0
     assert p.max_trade_leverage==30.0
     assert p.max_holding_bars==0
+    assert p.exit_policy=='adaptive_checkpoint'
+    assert p.checkpoint_bars==5
     assert not p.require_trend_filter
 
 
@@ -216,3 +218,14 @@ def test_v4_ml_model_selection_is_small_and_chronological():
     if model is not None:
         assert meta['selectedModel'] in {'logistic','hist_gradient_boosting'}
         assert meta['validationAUC']>=.45
+
+
+def test_adaptive_checkpoint_does_not_exit_before_checkpoint_without_extreme_reversal():
+    p=V4Params(exit_policy='adaptive_checkpoint',checkpoint_bars=5,thesis_exit_strong_reversal_adx=999)
+    f=features(synthetic(1300,seed=45),p).dropna()
+    r=f.iloc[-1].copy()
+    side=1
+    # Force ordinary momentum deterioration but disable the extreme-reversal branch.
+    r['rsi']=40.0; r['macd_hist']=-abs(float(r['macd_hist']))-1e-4
+    assert thesis_invalidated_v4(r,side,p,holding_bars=2) is False
+    assert thesis_invalidated_v4(r,side,p,holding_bars=5) in (True,False)
