@@ -29,12 +29,7 @@ A simplified financing stress is charged to the borrowed part of exposure (`noti
 
 There is **no forced 3-day or 5-day exit** in V4.
 
-A trade stays open until:
-
-- Stop Loss, or
-- Take Profit.
-
-If the evaluation period ends while a position remains active, it stays `OPEN`; final equity is marked to market instead of inventing an end-of-period trade close.
+There is no calendar-day holding limit. A trade stays open until Stop Loss or Take Profit **unless the technical thesis is explicitly invalidated** (momentum/trend reversal), in which case the exit is scheduled for the next open. This replaces an arbitrary 3/5-day timeout with an information-based exit. If the evaluation period ends while a position remains active, it stays `OPEN`; final equity is marked to market instead of inventing an end-of-period trade close.
 
 ## ML in V4
 
@@ -47,7 +42,7 @@ The research layer compares:
 
 using chronological validation and only labels whose outcomes were already resolved before each prediction date. A healthy model can scale the risk budget modestly. If validation AUC is below the health threshold, ML abstains and the technical strategy is unchanged.
 
-The V4 label is aligned with the strategy objective: **TP before SL** within a research labeling horizon. Unresolved events are excluded from training.
+The V4 label is aligned with the actual strategy outcome: the same SL/TP and next-open thesis-invalidation logic is replayed inside a finite research labeling horizon. Resolved events are labeled by realized sign; unresolved events are excluded from training.
 
 ## Run locally
 
