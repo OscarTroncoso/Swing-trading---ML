@@ -27,7 +27,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from .strategy_engine import PIP, features, technical_candidate_row
-from .strategy_v4 import V4Params, stop_target_v4
+from .strategy_v4 import V4Params, stop_target_v4, thesis_invalidated_v4
 
 
 V4_FEATURES = [
@@ -76,6 +76,14 @@ def _row_features(r: pd.Series, side: int) -> dict:
 
 
 def build_v4_events(df: pd.DataFrame, p: V4Params, mlp: MLV4Params) -> pd.DataFrame:
+    """Create past-only candidate labels using the same V4 exit thesis.
+
+    A label becomes known only when the simulated event actually exits by SL, TP,
+    gap, or next-open thesis invalidation. Events unresolved inside the research
+    horizon are omitted rather than forced into a class.
+    """
+    from .strategy_engine import pnl_eur
+
     x = features(df, p)
     warm = max(p.trend_ema_slow, p.sma_trend, p.bb_period, p.atr_period, p.adx_period, 30)
     adverse = p.spread_pips * PIP / 2 + p.slippage_pips_per_side * PIP
@@ -100,33 +108,61 @@ def build_v4_events(df: pd.DataFrame, p: V4Params, mlp: MLV4Params) -> pd.DataFr
         take = float(levels["takeProfit"])
         last = min(len(x) - 1, entry_i + mlp.label_horizon_bars)
 
-        label = None
+        exit_px = None
         outcome_end = None
         outcome_reason = None
+        pending_thesis = False
+
         for j in range(entry_i, last + 1):
             rr = x.iloc[j]
-            # Conservative daily-OHLC ordering if both are touched: SL first.
-            if side == 1:
-                if float(rr.open) <= stop or float(rr.low) <= stop:
-                    label = 0; outcome_end = x.index[j]; outcome_reason = "SL"; break
-                if float(rr.high) >= take:
-                    label = 1; outcome_end = x.index[j]; outcome_reason = "TP"; break
-            else:
-                if float(rr.open) >= stop or float(rr.high) >= stop:
-                    label = 0; outcome_end = x.index[j]; outcome_reason = "SL"; break
-                if float(rr.low) <= take:
-                    label = 1; outcome_end = x.index[j]; outcome_reason = "TP"; break
+            o, h, l = float(rr.open), float(rr.high), float(rr.low)
 
-        # An unresolved event contains no clean barrier label and is not used.
-        if label is None:
+            if pending_thesis:
+                # Overnight barriers have priority over discretionary next-open exit.
+                if side == 1 and o <= stop:
+                    exit_px = o - adverse; outcome_reason = "SL_GAP"
+                elif side == -1 and o >= stop:
+                    exit_px = o + adverse; outcome_reason = "SL_GAP"
+                elif side == 1 and o >= take:
+                    exit_px = take - adverse; outcome_reason = "TP_GAP"
+                elif side == -1 and o <= take:
+                    exit_px = take + adverse; outcome_reason = "TP_GAP"
+                else:
+                    exit_px = o - adverse if side == 1 else o + adverse
+                    outcome_reason = "THESIS_INVALIDATED"
+                outcome_end = x.index[j]
+                break
+
+            # Conservative daily OHLC ordering: SL first when both barriers are inside a bar.
+            if side == 1:
+                if o <= stop:
+                    exit_px = o - adverse; outcome_reason = "SL_GAP"; outcome_end = x.index[j]; break
+                if l <= stop:
+                    exit_px = stop - adverse; outcome_reason = "SL"; outcome_end = x.index[j]; break
+                if h >= take:
+                    exit_px = take - adverse; outcome_reason = "TP"; outcome_end = x.index[j]; break
+            else:
+                if o >= stop:
+                    exit_px = o + adverse; outcome_reason = "SL_GAP"; outcome_end = x.index[j]; break
+                if h >= stop:
+                    exit_px = stop + adverse; outcome_reason = "SL"; outcome_end = x.index[j]; break
+                if l <= take:
+                    exit_px = take + adverse; outcome_reason = "TP"; outcome_end = x.index[j]; break
+
+            if j < last:
+                pending_thesis = thesis_invalidated_v4(rr, side, p)
+
+        if exit_px is None or outcome_end is None:
             continue
 
+        unit_pnl = float(pnl_eur(entry, float(exit_px), 1.0, side))
         rec = {
             "signalDate": x.index[i],
             "entryDate": x.index[entry_i],
             "outcomeEnd": outcome_end,
             "side": int(side),
-            "label": int(label),
+            "label": int(unit_pnl > 0),
+            "unitPnlEUR": unit_pnl,
             "reason": outcome_reason,
         }
         rec.update(feat)
