@@ -61,6 +61,10 @@ class V4Params(BaseParams):
     max_trade_leverage: float = 30.0
     leverage_step: float = 1.0
 
+    # Simplified financing stress: annual cost applied to borrowed EUR exposure
+    # (notional - allocated position). x1 therefore has no financing charge.
+    financing_annual_pct_borrowed: float = 0.04
+
     # Trend is soft by default; only a very strong opposite trend is blocked.
     require_trend_filter: bool = False
     hard_trend_reject: bool = True
@@ -409,9 +413,17 @@ def backtest_v4(
     rejected = {"trend": 0, "size": 0}
     half_spread = p.spread_pips * PIP / 2
     slip = p.slippage_pips_per_side * PIP
+    financing_accum = 0.0
+    entry_commission = 0.0
 
     for i in range(first_i, last_i + 1):
         r = x.iloc[i]
+
+        # Financing accrues only for a position already open from the prior daily bar.
+        if position and i > first_i:
+            calendar_days = max(0, (x.index[i] - x.index[i-1]).days)
+            borrowed = max(0.0, notional_eur - float(active_plan.get("positionEUR", 0.0)))
+            financing_accum += borrowed * p.financing_annual_pct_borrowed * calendar_days / 365.0
 
         if position == 0 and pending is not None:
             position = int(pending["side"])
@@ -437,7 +449,9 @@ def backtest_v4(
             else:
                 active_plan = plan
                 notional_eur = float(plan["notionalEUR"])
-                capital -= _commission_notional(notional_eur, p)
+                entry_commission = _commission_notional(notional_eur, p)
+                capital -= entry_commission
+                financing_accum = 0.0
                 stop = float(plan["stopLoss"])
                 take = float(plan["takeProfit"])
                 initial_risk_price = abs(entry - stop)
@@ -464,8 +478,11 @@ def backtest_v4(
                     exit_px = float(raw_exit - adverse if position == 1 else raw_exit + adverse)
                 else:
                     exit_px = float(raw_exit - adverse if position == 1 else raw_exit + adverse)
-                trade_pnl = pnl_eur(entry, exit_px, notional_eur, position) - _commission_notional(notional_eur, p)
-                capital += trade_pnl
+                price_pnl = pnl_eur(entry, exit_px, notional_eur, position)
+                exit_commission = _commission_notional(notional_eur, p)
+                capital_delta = price_pnl - exit_commission - financing_accum
+                capital += capital_delta
+                trade_pnl = price_pnl - entry_commission - exit_commission - financing_accum
 
                 mfe_price = max(0.0, (float(fav_price) - entry) * position)
                 mae_price = max(0.0, -(float(adv_price) - entry) * position)
@@ -490,6 +507,10 @@ def backtest_v4(
                     "targetRiskEUR": active_plan["targetRiskEUR"],
                     "initialRiskEUR": round(initial_risk_eur, 2),
                     "profitEUR": round(float(trade_pnl), 2),
+                    "pricePnLEUR": round(float(price_pnl), 2),
+                    "financingCostEUR": round(float(financing_accum), 2),
+                    "entryCommissionEUR": round(float(entry_commission), 2),
+                    "exitCommissionEUR": round(float(exit_commission), 2),
                     "rMultiple": round(float(r_mult), 3),
                     "mfeR": round(float(mfe_price / initial_risk_price), 3),
                     "maeR": round(float(mae_price / initial_risk_price), 3),
@@ -506,11 +527,13 @@ def backtest_v4(
                 notional_eur = 0.0
                 entry_date = signal_date = None
                 active_plan = None
+                financing_accum = 0.0
+                entry_commission = 0.0
 
         mtm = capital
         if position:
             mark = float(r.close - half_spread if position == 1 else r.close + half_spread)
-            mtm += pnl_eur(entry, mark, notional_eur, position)
+            mtm += pnl_eur(entry, mark, notional_eur, position) - financing_accum
         equity_vals.append(float(mtm))
         equity_dates.append(x.index[i])
 
@@ -532,8 +555,9 @@ def backtest_v4(
     if position:
         r = x.iloc[last_i]
         mark = float(r.close - half_spread if position == 1 else r.close + half_spread)
-        unrealized = pnl_eur(entry, mark, notional_eur, position)
-        final_equity = capital + unrealized
+        unrealized_price = pnl_eur(entry, mark, notional_eur, position)
+        unrealized = unrealized_price - financing_accum - entry_commission
+        final_equity = capital + unrealized_price - financing_accum
         open_position = {
             "signalDate": str(signal_date),
             "entry": str(entry_date),
@@ -549,6 +573,8 @@ def backtest_v4(
             "accountExposureX": active_plan["accountExposureX"],
             "initialRiskEUR": active_plan["riskAtStopEUR"],
             "unrealizedPnLEUR": round(unrealized, 2),
+            "financingCostEUR": round(financing_accum, 2),
+            "entryCommissionEUR": round(entry_commission, 2),
             "trendScore": active_plan["trend"].get("score", 0),
             "trendRegime": active_plan["trend"].get("regime"),
             "stopSource": active_plan["stopSource"],
