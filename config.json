@@ -64,7 +64,11 @@
     "structureBufferATR": 0.1,
     "maxStructureATR": 2.75,
     "targetRR": 1.8,
-    "maxHoldingBars": 0
+    "maxHoldingBars": 0,
+    "thesisExitEnabled": true,
+    "thesisExitRSIMid": 50.0,
+    "thesisExitStrongReversalADX": 25.0,
+    "thesisExitMaxAlignmentScore": 1
   },
   "profitProtection": {
     "enabled": false,
