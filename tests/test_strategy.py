@@ -5,7 +5,9 @@ import numpy as np, pandas as pd
 from src.strategy_engine import (Params, backtest, backtest_v31_benchmark, features, position_plan, signal_row,
                                  signal_decision, trend_context, pnl_eur, adaptive_risk_pct, dynamic_stop_atr)
 from src.ml_meta import MLParams, build_event_labels, fit_model_for_date, backtest_ml, FEATURE_SETS
-from src.config import load_params, load_ml_params
+from src.config import load_params, load_ml_params, load_v4_params
+from src.strategy_v4 import V4Params, backtest_v4, position_plan_v4, signal_decision_v4
+from src.ml_v4 import MLV4Params, build_v4_events, fit_best_v4_model
 
 
 def synthetic(n=1800, drift=0.00008, seed=7):
@@ -120,5 +122,58 @@ def test_ml_feature_sets_nested():
     assert set(FEATURE_SETS['core']).issubset(FEATURE_SETS['compact']); assert set(FEATURE_SETS['compact']).issubset(FEATURE_SETS['full'])
 
 
-def test_nested_config_loads_v32_settings():
-    p=load_params('config.json'); m=load_ml_params('config.json'); assert p.initial_capital_eur==10_000; assert p.max_leverage==1.5; assert p.require_trend_filter; assert p.stop_mode=='hybrid_structure'; assert m.threshold==.55; assert m.min_validation_auc==.52
+def test_nested_config_loads_v4_settings():
+    p=load_v4_params('config.json')
+    assert p.initial_capital_eur==1_000
+    assert p.base_position_eur==100
+    assert p.min_trade_leverage==1.0
+    assert p.max_trade_leverage==30.0
+    assert p.max_holding_bars==0
+    assert not p.require_trend_filter
+
+
+def test_v4_reports_eur_position_and_trade_leverage():
+    d=synthetic(1100,seed=31); p=V4Params()
+    f=features(d,p).dropna()
+    r=f.iloc[-1]
+    side=1 if r.close>r.sma50 else -1
+    plan=position_plan_v4(1000,float(r.close),side,float(r.atr),r,p)
+    if plan['valid']:
+        assert plan['positionEUR']>=p.min_position_eur
+        assert 1.0<=plan['tradeLeverage']<=30.0
+        assert abs(plan['notionalEUR']-plan['positionEUR']*plan['tradeLeverage'])<.02
+        assert plan['riskAtStopEUR']<=plan['targetRiskEUR']+.02
+
+
+def test_v4_no_forced_time_exit():
+    b=backtest_v4(synthetic(1400,seed=32),V4Params())
+    assert all(t['reason']!='TIME' for t in b['trades'])
+    assert b['metrics']['timeExitTrades']==0
+
+
+def test_v4_trend_is_soft_except_extreme_opposition():
+    p=V4Params(hard_trend_reject=False)
+    f=features(synthetic(1200,seed=33),p).dropna()
+    for _,r in f.iterrows():
+        d=signal_decision_v4(r,p)
+        if d.get('candidate'):
+            assert d.get('accepted')
+            break
+
+
+def test_v4_open_position_is_not_counted_as_closed_trade():
+    b=backtest_v4(synthetic(1000,seed=34),V4Params(target_rr=5.0,stop_atr_normal=3.0,stop_atr_low_vol=3.0,stop_atr_high_vol=3.0))
+    assert b['metrics']['openTrades'] in (0,1)
+    assert b['metrics']['finalEquityEUR']>0
+
+
+def test_v4_ml_events_are_purged_and_barrier_resolved():
+    d=synthetic(2200,seed=35); p=V4Params(); mlp=MLV4Params(min_train_events=40,label_horizon_bars=60)
+    ev=build_v4_events(d,p,mlp)
+    assert len(ev)>40
+    assert (ev.entryDate>ev.signalDate).all()
+    assert (ev.outcomeEnd>=ev.entryDate).all()
+    assert set(ev.label.unique()).issubset({0,1})
+    asof=ev.signalDate.iloc[-10]
+    model,meta=fit_best_v4_model(ev,asof,mlp)
+    assert meta['trainingEvents']>0
