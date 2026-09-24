@@ -19,13 +19,15 @@ async function loadData(){
     txt("pos-exposure",`${Number(p.accountExposureX||0).toFixed(2)}× del equity`);
     txt("pos-risk",`${money(p.riskAtStopEUR)} (${Number(p.riskAtStopPct||0).toFixed(2)}%)`);
     txt("risk-target",`${money(p.targetRiskEUR)} / ${Number(p.riskBudgetUtilizationPct||0).toFixed(1)}% usado`);
+    const alts=(p.leverageAlternatives||[]).map(a=>`x${Number(a.leverage).toFixed(0)}: riesgo ${money(a.riskAtStopEUR)}${a.selected?" ✓":""}`).join(" · ");
+    txt("lev-alts",alts||"—");
     txt("stop-source",`${p.stopSource} / ${p.trend?.volatilityRegime||"—"}`);
     txt("stop-dist",`${Number(p.stopDistanceATR||0).toFixed(2)} ATR`);
     txt("stop-loss",Number(p.stopLoss).toFixed(5));
     txt("take-profit",Number(p.takeProfit).toFixed(5));
     txt("pos-rr",`${Number(p.rewardRisk||0).toFixed(2)}R`);
   } else {
-    ["pos-equity","pos-eur","pos-lev","pos-notional","pos-exposure","pos-risk","risk-target","stop-source","stop-dist","stop-loss","take-profit","pos-rr"].forEach(x=>txt(x,"—"));
+    ["pos-equity","pos-eur","pos-lev","pos-notional","pos-exposure","pos-risk","risk-target","lev-alts","stop-source","stop-dist","stop-loss","take-profit","pos-rr"].forEach(x=>txt(x,"—"));
   }
 
   txt("bt-window",`${d.backtestWindow?.start||"—"} → ${d.backtestWindow?.end||"—"}`);
