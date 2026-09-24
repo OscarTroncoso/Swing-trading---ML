@@ -84,6 +84,9 @@ class V4Params(BaseParams):
 
     # Exit is never time-based. Optional thesis invalidation exits at next open.
     thesis_exit_enabled: bool = True
+    exit_policy: str = "adaptive_checkpoint"  # adaptive_checkpoint | thesis | barrier_only
+    checkpoint_bars: int = 5
+    continuation_min_trend_score: int = 3
     thesis_exit_rsi_mid: float = 50.0
     thesis_exit_strong_reversal_adx: float = 25.0
     thesis_exit_max_alignment_score: int = 1
@@ -409,24 +412,48 @@ def _gap_aware_exit(r: pd.Series, side: int, stop: float, take: float) -> tuple[
     return None, None
 
 
-def thesis_invalidated_v4(r: pd.Series, side: int, p: V4Params) -> bool:
-    """Close-bar thesis invalidation; exit, if any, occurs next open."""
-    if not p.thesis_exit_enabled:
+def thesis_invalidated_v4(r: pd.Series, side: int, p: V4Params, holding_bars: int = 0) -> bool:
+    """Information-based exit evaluated at close; execution occurs next open.
+
+    adaptive_checkpoint:
+      - never uses a maximum holding period;
+      - before the checkpoint only an extreme opposing trend can invalidate;
+      - from the checkpoint onward, the trade remains open while either momentum or
+        trend structure still supports the original direction.
+    """
+    if not p.thesis_exit_enabled or p.exit_policy == "barrier_only":
         return False
     if any(pd.isna(r.get(k, np.nan)) for k in ["rsi", "macd_hist", "sma50", "adx"]):
         return False
-    if side == 1:
-        momentum_flip = float(r.rsi) < p.thesis_exit_rsi_mid and float(r.macd_hist) < 0
-        structure_flip = float(r.close) < float(r.sma50) and float(r.macd_hist) < 0
-    else:
-        momentum_flip = float(r.rsi) > p.thesis_exit_rsi_mid and float(r.macd_hist) > 0
-        structure_flip = float(r.close) > float(r.sma50) and float(r.macd_hist) > 0
+
     ctx = trend_context(r, side, p)
     strong_reversal = (
         float(r.adx) >= p.thesis_exit_strong_reversal_adx
         and int(ctx.get("score", 0)) <= p.thesis_exit_max_alignment_score
     )
-    return bool(momentum_flip or structure_flip or strong_reversal)
+    if strong_reversal:
+        return True
+
+    if side == 1:
+        momentum_flip = float(r.rsi) < p.thesis_exit_rsi_mid and float(r.macd_hist) < 0
+        structure_flip = float(r.close) < float(r.sma50) and float(r.macd_hist) < 0
+        momentum_alive = float(r.rsi) >= p.thesis_exit_rsi_mid and float(r.macd_hist) >= 0
+        structure_alive = float(r.close) >= float(r.sma50) and int(ctx.get("score", 0)) >= p.continuation_min_trend_score
+    else:
+        momentum_flip = float(r.rsi) > p.thesis_exit_rsi_mid and float(r.macd_hist) > 0
+        structure_flip = float(r.close) > float(r.sma50) and float(r.macd_hist) > 0
+        momentum_alive = float(r.rsi) <= p.thesis_exit_rsi_mid and float(r.macd_hist) <= 0
+        structure_alive = float(r.close) <= float(r.sma50) and int(ctx.get("score", 0)) >= p.continuation_min_trend_score
+
+    if p.exit_policy == "thesis":
+        return bool(momentum_flip or structure_flip)
+
+    if p.exit_policy == "adaptive_checkpoint":
+        if holding_bars < p.checkpoint_bars:
+            return False
+        return not bool(momentum_alive or structure_alive)
+
+    raise ValueError(f"Unknown V4 exit_policy: {p.exit_policy}")
 
 
 def _open_gap_exit(r: pd.Series, side: int, stop: float, take: float) -> tuple[str | None, float | None]:
@@ -465,6 +492,7 @@ def backtest_v4(
     notional_eur = 0.0
     entry = stop = take = np.nan
     entry_date = signal_date = None
+    entry_i = None
     active_plan = None
     initial_risk_price = np.nan
     fav_price = adv_price = np.nan
@@ -520,6 +548,7 @@ def backtest_v4(
                 take = float(plan["takeProfit"])
                 initial_risk_price = abs(entry - stop)
                 entry_date = x.index[i]
+                entry_i = i
                 signal_date = signal_dt
                 fav_price = entry
                 adv_price = entry
@@ -604,6 +633,7 @@ def backtest_v4(
                 position = 0
                 notional_eur = 0.0
                 entry_date = signal_date = None
+                entry_i = None
                 active_plan = None
                 financing_accum = 0.0
                 entry_commission = 0.0
@@ -612,7 +642,8 @@ def backtest_v4(
         # If the position survived the whole daily bar, evaluate whether the entry thesis
         # has broken. This never exits at the same close; it schedules the next-open exit.
         if position and not pending_thesis_exit and i < last_i:
-            pending_thesis_exit = thesis_invalidated_v4(r, position, p)
+            holding_bars = 0 if entry_i is None else max(0, i - entry_i)
+            pending_thesis_exit = thesis_invalidated_v4(r, position, p, holding_bars=holding_bars)
 
         mtm = capital
         if position:
