@@ -73,11 +73,13 @@ def main():
     p = load_v4_params(ROOT / args.config)
 
     variants = {
-        "v4_base_rr1.8": p,
+        "v4_thesis_rr1.8": p,
+        "v4_barrier_only_rr1.8": replace(p, thesis_exit_enabled=False),
         "v4_no_hard_trend_reject": replace(p, hard_trend_reject=False),
+        "v4_rr1.0": replace(p, target_rr=1.0),
+        "v4_rr1.2": replace(p, target_rr=1.2),
         "v4_rr1.5": replace(p, target_rr=1.5),
         "v4_rr2.0": replace(p, target_rr=2.0),
-        "v4_rr2.2": replace(p, target_rr=2.2),
         "v4_atr_tighter": replace(p, stop_atr_low_vol=1.20, stop_atr_normal=1.35, stop_atr_high_vol=1.55),
         "v4_atr_wider": replace(p, stop_atr_low_vol=1.50, stop_atr_normal=1.70, stop_atr_high_vol=1.90),
         "v4_lev_cap_1x": replace(p, max_trade_leverage=1.0),
