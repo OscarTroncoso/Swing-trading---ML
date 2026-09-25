@@ -11,6 +11,9 @@ on:
       - '.github/workflows/research.yml'
 permissions:
   contents: write
+concurrency:
+  group: v33-research-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   research:
     runs-on: ubuntu-latest
@@ -37,9 +40,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json data.equity.csv data/research_10y.csv reports/*.csv reports/*.json
+          git add data/research_10y.csv reports/*.csv reports/*.json
           git diff --cached --quiet || git commit -m "research: refresh V3.3 EUR-stake and ML results"
-          git push origin HEAD:v3.3-risk-ml-rework
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@v4
         with:
           name: eurusd-v33-full-research
