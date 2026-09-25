@@ -36,6 +36,8 @@ jobs:
         run: python scripts/v33_exit_research.py --csv data/research_10y.csv
       - name: Multi-tranche TP/SL portfolio research
         run: python scripts/v33_portfolio_research.py --csv data/research_10y.csv
+      - name: Dynamic stagnation exit research
+        run: python scripts/v33_stagnation_research.py --csv data/research_10y.csv
       - name: ML model-family research on TP-before-SL labels
         run: python scripts/ml_v33_research.py --csv data/research_10y.csv --start 2026-01-01
       - name: ML raw vs direction-aligned feature research
