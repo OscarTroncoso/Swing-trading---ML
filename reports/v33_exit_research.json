@@ -8,6 +8,9 @@
     "trailingATR": 1.5,
     "exitOnOppositeSignal": true,
     "invalidationMode": "none",
+    "partialTakeR": 0.0,
+    "partialFraction": 0.0,
+    "partialMoveStopToBE": true,
     "maxHoldingBars": 0
   },
   "selectedTrainYears": [
@@ -235,6 +238,18 @@
       "selectedFor2026Test": true
     },
     {
+      "variant": "partial_0.75R_25pct",
+      "medianReturnTrain": 0.5335000000000001,
+      "meanReturnTrain": 0.18933333333333327,
+      "positiveYearsTrain": 4,
+      "medianDDTrain": 3.7685500000000003,
+      "medianSharpeTrain": 0.13275,
+      "medianPFTrain": 1.0627,
+      "worstYearTrain": -4.1358,
+      "robustScore": 0.1189908333333333,
+      "selectedFor2026Test": false
+    },
+    {
       "variant": "be1_opposite",
       "medianReturnTrain": 0.47509999999999997,
       "meanReturnTrain": 0.2068833333333334,
@@ -304,6 +319,30 @@
       "medianPFTrain": 0.9913000000000001,
       "worstYearTrain": -5.1889,
       "robustScore": -1.0093025,
+      "selectedFor2026Test": false
+    },
+    {
+      "variant": "partial_1R_50pct_opposite",
+      "medianReturnTrain": -0.49015,
+      "meanReturnTrain": 0.24114999999999995,
+      "positiveYearsTrain": 2,
+      "medianDDTrain": 3.44375,
+      "medianSharpeTrain": -0.09355,
+      "medianPFTrain": 0.8907,
+      "worstYearTrain": -3.6633,
+      "robustScore": -1.0113708333333336,
+      "selectedFor2026Test": false
+    },
+    {
+      "variant": "partial_1R_50pct_trail1.5",
+      "medianReturnTrain": -0.47855000000000003,
+      "meanReturnTrain": -0.5148833333333332,
+      "positiveYearsTrain": 3,
+      "medianDDTrain": 4.1334,
+      "medianSharpeTrain": -0.06400000000000003,
+      "medianPFTrain": 1.0235,
+      "worstYearTrain": -6.3484,
+      "robustScore": -1.0741049999999999,
       "selectedFor2026Test": false
     },
     {
@@ -400,6 +439,42 @@
       "medianPFTrain": 0.82465,
       "worstYearTrain": -2.7055,
       "robustScore": -1.7349083333333335,
+      "selectedFor2026Test": false
+    },
+    {
+      "variant": "partial_1R_25pct",
+      "medianReturnTrain": -1.1180999999999999,
+      "meanReturnTrain": -0.5233166666666667,
+      "positiveYearsTrain": 3,
+      "medianDDTrain": 3.9917999999999996,
+      "medianSharpeTrain": -0.2073,
+      "medianPFTrain": 0.9289499999999999,
+      "worstYearTrain": -5.7768,
+      "robustScore": -1.7496724999999997,
+      "selectedFor2026Test": false
+    },
+    {
+      "variant": "partial_1.25R_50pct",
+      "medianReturnTrain": -1.1978,
+      "meanReturnTrain": -0.4168333333333332,
+      "positiveYearsTrain": 2,
+      "medianDDTrain": 4.08335,
+      "medianSharpeTrain": -0.233,
+      "medianPFTrain": 0.8437,
+      "worstYearTrain": -5.9101,
+      "robustScore": -1.9027983333333334,
+      "selectedFor2026Test": false
+    },
+    {
+      "variant": "partial_1R_50pct",
+      "medianReturnTrain": -1.7453500000000002,
+      "meanReturnTrain": -0.8379666666666669,
+      "positiveYearsTrain": 2,
+      "medianDDTrain": 3.91215,
+      "medianSharpeTrain": -0.35615,
+      "medianPFTrain": 0.81395,
+      "worstYearTrain": -6.1447,
+      "robustScore": -2.4636733333333334,
       "selectedFor2026Test": false
     },
     {
