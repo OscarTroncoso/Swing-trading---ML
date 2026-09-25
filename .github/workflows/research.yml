@@ -32,6 +32,8 @@ jobs:
         run: python scripts/backtest_v33.py --csv data/research_10y.csv --start 2026-01-01
       - name: Robust V3.3 policy search using 2020-2025 only
         run: python scripts/v33_policy_research.py --csv data/research_10y.csv
+      - name: V3.1-equivalent stop/take geometry research
+        run: python scripts/v33_semantic_policy_research.py --csv data/research_10y.csv
       - name: Non-time exit policy research
         run: python scripts/v33_exit_research.py --csv data/research_10y.csv
       - name: Multi-tranche TP/SL portfolio research
