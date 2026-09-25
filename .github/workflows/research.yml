@@ -1,8 +1,19 @@
-name: Full V3.2 research suite
+name: Full V3.3 research suite
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - v3.3-risk-ml-rework
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'config.json'
+      - '.github/workflows/research.yml'
 permissions:
   contents: write
+concurrency:
+  group: v33-research-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   research:
     runs-on: ubuntu-latest
@@ -16,33 +27,40 @@ jobs:
       - name: Tests
         run: pytest -q
       - name: Freeze exact 10-year EURUSD OHLC
-        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/research_10y.csv
-      - name: V3.1 benchmark vs V3.2 current
-        run: python scripts/backtest_2026.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Stop MAE MFE and false-stop diagnostics
-        run: python scripts/stop_diagnostics.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Component ablation
-        run: python scripts/v32_ablation.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Return and risk attribution
-        run: python scripts/improvement_research.py --csv data/research_10y.csv --start 2026-01-01
-      - name: V3.2 structural robustness
-        run: python scripts/robustness_2026.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Frozen annual walk-forward
-        run: python scripts/walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-      - name: ML research-only annual walk-forward
-        run: python scripts/ml_walk_forward.py --csv data/research_10y.csv --first-test-year 2020 --last-test-year 2026
-      - name: ML health/feature research
-        run: python scripts/ml_research.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Commit refreshed research outputs
+        run: python scripts/fetch_market.py --period 10y --out data/research_10y.csv
+      - name: Compare V3.1 V3.2 V3.3
+        run: python scripts/backtest_v33.py --csv data/research_10y.csv --start 2026-01-01
+      - name: Robust V3.3 policy search using 2020-2025 only
+        run: python scripts/v33_policy_research.py --csv data/research_10y.csv
+      - name: V3.1-equivalent stop/take geometry research
+        run: python scripts/v33_semantic_policy_research.py --csv data/research_10y.csv
+      - name: Joint stop geometry + conditional extension research
+        run: python scripts/v33_joint_research.py --csv data/research_10y.csv
+      - name: Non-time exit policy research
+        run: python scripts/v33_exit_research.py --csv data/research_10y.csv
+      - name: Multi-tranche TP/SL portfolio research
+        run: python scripts/v33_portfolio_research.py --csv data/research_10y.csv
+      - name: Dynamic stagnation exit research
+        run: python scripts/v33_stagnation_research.py --csv data/research_10y.csv
+      - name: Conditional extension research
+        run: python scripts/v33_extension_research.py --csv data/research_10y.csv
+      - name: Narrow counter-trend veto research
+        run: python scripts/v33_entry_filter_research.py --csv data/research_10y.csv
+      - name: ML model-family research on TP-before-SL labels
+        run: python scripts/ml_v33_research.py --csv data/research_10y.csv --start 2026-01-01
+      - name: ML raw vs direction-aligned feature research
+        run: python scripts/ml_v33_feature_research.py --csv data/research_10y.csv
+      - name: Commit refreshed V3.3 research outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json data.equity.csv data/research_10y.csv reports/*.csv reports/*.json
-          git diff --cached --quiet || git commit -m "research: refresh V3.2 trend and structural-risk results"
-          git push
+          git add data/research_10y.csv reports/*.csv reports/*.json
+          git diff --cached --quiet || git commit -m "research: refresh V3.3 EUR-stake and ML results"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@v4
         with:
-          name: eurusd-v32-full-research
+          name: eurusd-v33-full-research
           path: |
             data/research_10y.csv
             data.json

@@ -1,0 +1,4 @@
+model,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades,expectancyR,avgMFER,avgMAER,medianWinnerCaptureRatio,stoppedTrades,takeProfitTrades,timeExitTrades,rejectedTrendSignals,rejectedWideStops,rejectedSize,realizedCapitalEUR,openPositions,countertrendVetoes,avgStakeEUR,avgGrossExposureEUR
+V3.1 benchmark (legacy 5-bar exit),EUR,1000.0,1029.94,2.9944,65.22,1.9146,1.9272,23,1.2182,1.6838,1.3,64.74,0.712,0.939,0,,,,,,,,,,,,,,,
+V3.2 trend/structural filter,EUR,1000.0,997.8,-0.2205,41.67,1.4427,0.9067,12,-0.1386,-0.1374,-0.18,35.79,0.565,0.892,0,-0.015,0.697,0.57,0.369,2.0,1.0,9.0,24.0,24.0,0.0,,,,,
+V3.3 EUR stake + TP/SL only,EUR,1000.0,969.28,-3.0723,25.0,4.8583,0.5513,12,-0.6923,-0.9499,-3.52,87.37,10.5,14.0,12,-0.251,1.14,0.944,0.992,5.0,3.0,0.0,,,,957.71,1.0,0.0,99.83,1048.75

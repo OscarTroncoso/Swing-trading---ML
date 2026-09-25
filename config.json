@@ -1,17 +1,27 @@
 {
   "account": {
     "currency": "EUR",
-    "initialCapitalEUR": 10000.0
+    "initialCapitalEUR": 1000.0
+  },
+  "position": {
+    "baseStakeEUR": 100.0,
+    "minStakeEUR": 25.0,
+    "maxStakePctEquity": 0.25,
+    "baseRiskPctEquity": 0.01,
+    "minRiskPctEquity": 0.005,
+    "maxRiskPctEquity": 0.015,
+    "minLeverage": 1,
+    "maxLeverage": 30
   },
   "risk": {
     "sizingMode": "adaptive_risk",
-    "fixedNotionalEUR": 10000.0,
-    "baseRiskPerTrade": 0.005,
-    "minRiskPerTrade": 0.0025,
-    "maxRiskPerTrade": 0.0075,
-    "maxLeverage": 1.5,
-    "lotStepUnits": 1000.0,
-    "minUnits": 1000.0,
+    "fixedNotionalEUR": 1000.0,
+    "baseRiskPerTrade": 0.01,
+    "minRiskPerTrade": 0.005,
+    "maxRiskPerTrade": 0.015,
+    "maxLeverage": 30.0,
+    "lotStepUnits": 1.0,
+    "minUnits": 1.0,
     "absoluteMaxUnits": 0.0,
     "volatilityTarget": 0.08,
     "volScaleMin": 0.65,
@@ -40,7 +50,11 @@
     "rangeRSIHigh": 65.0
   },
   "trend": {
-    "enabled": true,
+    "enabled": false,
+    "softSizing": true,
+    "hardCountertrendVeto": false,
+    "countertrendMaxScore": 1,
+    "countertrendMinADX": 28.0,
     "emaFast": 50,
     "emaSlow": 200,
     "slopeBars": 10,
@@ -52,32 +66,32 @@
     "volRegimeMinObs": 60
   },
   "stop": {
-    "mode": "hybrid_structure",
-    "atrLowVol": 1.35,
+    "mode": "atr",
     "atrNormal": 1.5,
-    "atrHighVol": 1.75,
     "structureLookback": 8,
-    "structureBufferATR": 0.15,
-    "maxStopATR": 2.5,
-    "targetRR": 1.6,
-    "maxHoldingBars": 5
-  },
-  "profitProtection": {
-    "enabled": false,
-    "breakevenTriggerR": 1.25,
-    "trailingTriggerR": 1.75,
+    "structureBufferATR": 0.10,
+    "maxStructureExtensionATR": 0.25,
+    "targetRR": 2.2,
+    "maxHoldingBars": 0,
+    "breakevenTriggerR": 0.0,
+    "trailingTriggerR": 0.0,
     "trailingATR": 1.5,
-    "structureLookback": 5
+    "exitOnOppositeSignal": false,
+    "invalidationMode": "none",
+    "partialTakeR": 0.0,
+    "partialFraction": 0.0,
+    "partialMoveStopToBE": true
   },
   "ml": {
     "enabled": true,
-    "liveMode": "research_only",
-    "threshold": 0.55,
-    "confidenceReference": 0.7,
+    "liveMode": "soft_research",
+    "threshold": 0.50,
+    "softMinMultiplier": 0.75,
+    "softMaxMultiplier": 1.20,
     "retrainEveryBars": 60,
-    "minTrainEvents": 100,
-    "calibrationFraction": 0.2,
-    "featureSet": "core",
+    "minTrainEvents": 120,
+    "calibrationFraction": 0.20,
+    "featureSet": "compact",
     "maxTrainYears": 8,
     "C": 0.7,
     "minValidationAUC": 0.52
