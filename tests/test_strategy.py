@@ -6,6 +6,8 @@ from src.strategy_engine import (Params, backtest, backtest_v31_benchmark, featu
                                  signal_decision, trend_context, pnl_eur, adaptive_risk_pct, dynamic_stop_atr)
 from src.ml_meta import MLParams, build_event_labels, fit_model_for_date, backtest_ml, FEATURE_SETS
 from src.config import load_params, load_ml_params
+from src.v33_engine import V33Policy, backtest_v33, load_v33_policy, position_plan_v33
+from src.ml_v33 import ML33Params, build_resolved_events, chronological_model_comparison
 
 
 def synthetic(n=1800, drift=0.00008, seed=7):
@@ -120,5 +122,64 @@ def test_ml_feature_sets_nested():
     assert set(FEATURE_SETS['core']).issubset(FEATURE_SETS['compact']); assert set(FEATURE_SETS['compact']).issubset(FEATURE_SETS['full'])
 
 
-def test_nested_config_loads_v32_settings():
-    p=load_params('config.json'); m=load_ml_params('config.json'); assert p.initial_capital_eur==10_000; assert p.max_leverage==1.5; assert p.require_trend_filter; assert p.stop_mode=='hybrid_structure'; assert m.threshold==.55; assert m.min_validation_auc==.52
+def test_nested_config_loads_current_settings():
+    p=load_params('config.json'); m=load_ml_params('config.json')
+    assert p.initial_capital_eur==1_000
+    assert p.max_leverage==30.0
+    assert not p.require_trend_filter
+    assert p.stop_mode=='atr'
+    assert m.threshold==.5
+    assert m.min_validation_auc==.52
+
+
+def test_v33_config_uses_eur_stake_and_30x_search_cap():
+    pol=load_v33_policy('config.json')
+    assert pol.initial_capital_eur==1_000
+    assert pol.base_stake_eur==100
+    assert pol.min_leverage==1 and pol.max_leverage==30
+    assert pol.max_holding_bars==0
+
+
+def test_v33_plan_reports_stake_exposure_and_integer_leverage():
+    d=synthetic(1000); p=load_params('config.json'); pol=load_v33_policy('config.json')
+    r=features(d,p).dropna().iloc[-1]; side=1 if r.close>r.sma50 else -1
+    plan=position_plan_v33(1_000,float(r.close),side,float(r.atr),r,p,pol)
+    if plan['valid']:
+        assert plan['stakeEUR']>0
+        assert plan['grossExposureEUR']>=plan['stakeEUR']
+        assert isinstance(plan['leverage'],int)
+        assert 1<=plan['leverage']<=30
+        assert plan['riskAtStopEUR']<=plan['riskBudgetEUR']+1e-9
+
+
+def test_v33_has_no_time_exit_by_default():
+    d=synthetic(1400,seed=31); p=load_params('config.json'); pol=load_v33_policy('config.json')
+    b=backtest_v33(d,p,pol,start='2022-01-01')
+    assert all(t['reason'] in ('TP','SL') for t in b['trades'])
+    assert b['metrics']['timeExitTrades']==0
+
+
+def test_v33_open_position_is_not_force_closed_at_sample_end():
+    d=synthetic(950,seed=4); p=load_params('config.json')
+    pol=V33Policy(initial_capital_eur=1_000,base_stake_eur=100,max_holding_bars=0,stop_atr=10,target_rr=10)
+    b=backtest_v33(d,p,pol,start=d.index[700])
+    assert b['metrics']['openPositions'] in (0,1)
+    if b['openTrade'] is not None:
+        assert b['openTrade']['unrealizedPnLEUR']==b['openTrade']['unrealizedPnLEUR']
+
+
+def test_ml_v33_labels_only_resolved_tp_or_sl():
+    d=synthetic(1700,seed=12); p=load_params('config.json'); pol=load_v33_policy('config.json')
+    ev=build_resolved_events(d,p,pol)
+    assert len(ev)>30
+    assert set(ev.label.unique()).issubset({0,1})
+    assert (ev.outcomeEnd>=ev.entryDate).all()
+
+
+def test_ml_v33_model_comparison_is_chronological():
+    d=synthetic(1800,seed=23); p=load_params('config.json'); pol=load_v33_policy('config.json')
+    ev=build_resolved_events(d,p,pol)
+    cmp=chronological_model_comparison(ev,ML33Params(min_train_events=60),folds=4)
+    if not cmp.empty:
+        assert set(cmp.model).issubset({'logistic','random_forest','hist_gradient_boosting'})
+        assert ((cmp.meanAUC>=0)&(cmp.meanAUC<=1)).all()
