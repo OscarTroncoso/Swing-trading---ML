@@ -25,7 +25,8 @@
 <tr><td>Equity</td><td id="pos-equity">—</td></tr>
 <tr><td>Stake / capital asignado</td><td id="pos-stake">—</td></tr>
 <tr><td>Exposición bruta</td><td id="pos-exposure">—</td></tr>
-<tr><td>Leverage seleccionado</td><td id="pos-lev">—</td></tr>
+<tr><td>Leverage del trade</td><td id="pos-lev">—</td></tr>
+<tr><td>Exposición / equity de cuenta</td><td id="pos-account-exposure">—</td></tr>
 <tr><td>Riesgo al SL</td><td id="pos-risk">—</td></tr>
 <tr><td>Presupuesto máximo de riesgo</td><td id="pos-risk-budget">—</td></tr>
 <tr><td>Stop Loss</td><td id="stop-loss">—</td></tr>
@@ -33,7 +34,7 @@
 <tr><td>R/R</td><td id="pos-rr">—</td></tr>
 <tr><td>Criterio leverage</td><td id="lev-method">—</td></tr>
 </tbody></table>
-<p class="note">x1 = exposición igual al stake (spot-equivalent en este simulador). x30 es solo el techo de búsqueda. El motor elige el mayor entero que mantiene la pérdida estimada al SL dentro del presupuesto de riesgo.</p></div>
+<p class="note">x1 = exposición igual al stake (spot-equivalent en este simulador). Ejemplo: stake €100 con x10 = €1.000 de exposición. Si la cuenta tiene €1.000, eso equivale a 1,00x del equity total. x30 es solo el techo de búsqueda; el motor no lo usa si el SL excedería el presupuesto de riesgo.</p></div>
 
 <div class="card"><h3>Contexto técnico + ML</h3><table class="kv"><tbody>
 <tr><td>RSI</td><td id="rsi">—</td></tr>
