@@ -34,6 +34,8 @@ jobs:
         run: python scripts/v33_policy_research.py --csv data/research_10y.csv
       - name: V3.1-equivalent stop/take geometry research
         run: python scripts/v33_semantic_policy_research.py --csv data/research_10y.csv
+      - name: Joint stop geometry + conditional extension research
+        run: python scripts/v33_joint_research.py --csv data/research_10y.csv
       - name: Non-time exit policy research
         run: python scripts/v33_exit_research.py --csv data/research_10y.csv
       - name: Multi-tranche TP/SL portfolio research
