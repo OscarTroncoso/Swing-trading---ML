@@ -63,6 +63,10 @@ class V33Policy:
     stagnation_min_mfe_r: float = 0.50
     stagnation_min_close_r: float = 0.0
     stagnation_require_weak_thesis: bool = True
+    extension_review_bars: int = 0
+    extension_min_mfe_r: float = 0.50
+    extension_min_close_r: float = 0.0
+    extension_min_confirmations: int = 2
     ml_soft_min_multiplier: float = 0.75
     ml_soft_max_multiplier: float = 1.20
 
@@ -106,6 +110,10 @@ def load_v33_policy(path: str | Path = "config.json") -> V33Policy:
         stagnation_min_mfe_r=float(st.get("stagnationMinMFER", 0.50)),
         stagnation_min_close_r=float(st.get("stagnationMinCloseR", 0.0)),
         stagnation_require_weak_thesis=bool(st.get("stagnationRequireWeakThesis", True)),
+        extension_review_bars=int(st.get("extensionReviewBars", 0)),
+        extension_min_mfe_r=float(st.get("extensionMinMFER", 0.50)),
+        extension_min_close_r=float(st.get("extensionMinCloseR", 0.0)),
+        extension_min_confirmations=int(st.get("extensionMinConfirmations", 2)),
         ml_soft_min_multiplier=float(ml.get("softMinMultiplier", 0.75)),
         ml_soft_max_multiplier=float(ml.get("softMaxMultiplier", 1.20)),
     )
@@ -590,6 +598,22 @@ def backtest_v33(
                     stale = mfe_r < policy.stagnation_min_mfe_r and close_r < policy.stagnation_min_close_r
                     if stale and (weak or not policy.stagnation_require_weak_thesis):
                         pending_exit = "STAGNATION"
+                # Conditional extension: after a review age, a position is NOT
+                # closed merely because time passed. It remains open while it has
+                # demonstrated favorable excursion/profit and the core thesis is
+                # still sufficiently confirmed. Otherwise it exits next open.
+                if pending_exit is None and policy.extension_review_bars > 0 and i - entry_i >= policy.extension_review_bars:
+                    initial_risk = max(abs(active["entry"] - active["initialStop"]), 1e-12)
+                    close_r = ((float(row.close) - active["entry"]) * position) / initial_risk
+                    mfe_r = max(0.0, (float(fav) - active["entry"]) * position) / initial_risk
+                    confirmations = 0
+                    confirmations += int(row.rsi > 50) if position == 1 else int(row.rsi < 50)
+                    confirmations += int(row.close > row.sma50) if position == 1 else int(row.close < row.sma50)
+                    confirmations += int(row.macd_hist > 0) if position == 1 else int(row.macd_hist < 0)
+                    progress_ok = close_r >= policy.extension_min_close_r or mfe_r >= policy.extension_min_mfe_r
+                    thesis_ok = confirmations >= policy.extension_min_confirmations
+                    if not (progress_ok and thesis_ok):
+                        pending_exit = "DYNAMIC_REVIEW"
 
         mtm = capital
         if position and active is not None:
@@ -691,5 +715,5 @@ def current_snapshot_v33(
         "volatilityRegime": volatility_regime(row),
         "countertrendVeto": vetoed,
         "positionPlan": plan,
-        "exitPolicy": ("TP_SL_DYNAMIC_STAGNATION" if policy.stagnation_bars > 0 else "TP_SL_ONLY") if policy.max_holding_bars <= 0 else f"TP_SL_OR_{policy.max_holding_bars}_BARS",
+        "exitPolicy": ("TP_SL_CONDITIONAL_EXTENSION" if policy.extension_review_bars > 0 else ("TP_SL_DYNAMIC_STAGNATION" if policy.stagnation_bars > 0 else "TP_SL_ONLY")) if policy.max_holding_bars <= 0 else f"TP_SL_OR_{policy.max_holding_bars}_BARS",
     }
