@@ -30,6 +30,7 @@ async function loadData(){
       txt("pos-stake",money(p.stakeEUR));
       txt("pos-exposure",money(p.grossExposureEUR));
       txt("pos-lev",`x${p.leverage} (rango ${p.leverageRange})`);
+      txt("pos-account-exposure",`${Number(p.accountExposureMultiple||0).toFixed(2)}x equity`);
       txt("pos-risk",`${money(p.riskAtStopEUR)} / ${Number(p.riskAtStopPct||0).toFixed(2)}%`);
       txt("pos-risk-budget",money(p.riskBudgetEUR));
       txt("stop-loss",Number(p.stopLoss).toFixed(5));
@@ -37,7 +38,7 @@ async function loadData(){
       txt("pos-rr",Number(p.rewardRisk||0).toFixed(2));
       txt("lev-method",p.selectionMethod||"—");
     }else{
-      ["pos-equity","pos-stake","pos-exposure","pos-lev","pos-risk","pos-risk-budget","stop-loss","take-profit","pos-rr","lev-method"].forEach(x=>txt(x,"—"));
+      ["pos-equity","pos-stake","pos-exposure","pos-lev","pos-account-exposure","pos-risk","pos-risk-budget","stop-loss","take-profit","pos-rr","lev-method"].forEach(x=>txt(x,"—"));
     }
 
     txt("bt-window",`${d.backtestWindow?.start||"—"} → ${d.backtestWindow?.end||"—"}`);
@@ -58,7 +59,7 @@ async function loadData(){
       txt("open-current",open.currentPrice);
       txt("open-stake",money(open.stakeEUR));
       txt("open-exposure",money(open.grossExposureEUR));
-      txt("open-lev",`x${open.leverage}`);
+      txt("open-lev",`x${open.leverage} / ${Number(open.accountExposureMultiple||0).toFixed(2)}x equity`);
       txt("open-sl",open.stopLoss);
       txt("open-tp",open.takeProfit);
       txt("open-pnl",money(open.unrealizedPnLEUR));
