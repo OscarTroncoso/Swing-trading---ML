@@ -50,7 +50,11 @@ class V33Policy:
     hard_countertrend_veto: bool = False
     countertrend_max_score: int = 1
     countertrend_min_adx: float = 28.0
-    max_holding_bars: int = 0  # 0 = no time exit; TP/SL only.
+    max_holding_bars: int = 0  # 0 = no time exit.
+    breakeven_trigger_r: float = 0.0  # 0 = disabled; effective next bar.
+    trailing_trigger_r: float = 0.0   # 0 = disabled; effective next bar.
+    trailing_atr: float = 1.5
+    exit_on_opposite_signal: bool = False  # execute next open, never same close.
     ml_soft_min_multiplier: float = 0.75
     ml_soft_max_multiplier: float = 1.20
 
@@ -82,6 +86,10 @@ def load_v33_policy(path: str | Path = "config.json") -> V33Policy:
         countertrend_max_score=int(tr.get("countertrendMaxScore", 1)),
         countertrend_min_adx=float(tr.get("countertrendMinADX", 28.0)),
         max_holding_bars=int(st.get("maxHoldingBars", 0)),
+        breakeven_trigger_r=float(st.get("breakevenTriggerR", 0.0)),
+        trailing_trigger_r=float(st.get("trailingTriggerR", 0.0)),
+        trailing_atr=float(st.get("trailingATR", 1.5)),
+        exit_on_opposite_signal=bool(st.get("exitOnOppositeSignal", False)),
         ml_soft_min_multiplier=float(ml.get("softMinMultiplier", 0.75)),
         ml_soft_max_multiplier=float(ml.get("softMaxMultiplier", 1.20)),
     )
@@ -253,6 +261,39 @@ def position_plan_v33(
     }
 
 
+def _protective_stop_after_close(
+    current_stop: float,
+    entry: float,
+    side: int,
+    initial_risk_price: float,
+    row: pd.Series,
+    policy: V33Policy,
+) -> tuple[float, str | None]:
+    """Update a protective stop using only the completed bar close.
+
+    The returned stop becomes active on the *next* bar, so a bar that creates
+    the trigger cannot retroactively stop the trade on the same bar.
+    """
+    if initial_risk_price <= 0:
+        return current_stop, None
+    close_r = ((float(row.close) - entry) * side) / initial_risk_price
+    new_stop = current_stop
+    event = None
+    if policy.breakeven_trigger_r > 0 and close_r >= policy.breakeven_trigger_r:
+        be = entry
+        new_stop = max(new_stop, be) if side == 1 else min(new_stop, be)
+        event = "BREAKEVEN"
+    if policy.trailing_trigger_r > 0 and close_r >= policy.trailing_trigger_r and pd.notna(row.get("atr", np.nan)):
+        atr = float(row.atr)
+        candidate = float(row.close) - side * policy.trailing_atr * atr
+        if side == 1:
+            new_stop = max(new_stop, candidate)
+        else:
+            new_stop = min(new_stop, candidate)
+        event = "TRAIL"
+    return float(new_stop), event
+
+
 def _trade_metrics(
     entry: float,
     exit_px: float,
@@ -294,6 +335,7 @@ def backtest_v33(
     capital = float(policy.initial_capital_eur)
     position = 0
     pending = None
+    pending_exit = None
     active = None
     entry_i = None
     fav = adv = np.nan
@@ -307,6 +349,29 @@ def backtest_v33(
 
     for i in range(first_i, last_i + 1):
         row = x.iloc[i]
+
+        # A close-based invalidation/opposite signal exits at the NEXT open.
+        if position and active is not None and pending_exit is not None:
+            exit_px = float(row.open - half_spread - slip if position == 1 else row.open + half_spread + slip)
+            pnl = pnl_eur(active["entry"], exit_px, active["exposure"], position) - _commission(active["exposure"], p)
+            capital += pnl
+            diag = _trade_metrics(
+                active["entry"], exit_px, active["stake"], active["leverage"], position,
+                active["risk"], float(fav), float(adv), abs(active["entry"] - active["initialStop"]),
+            )
+            ctx = active["plan"]["trend"]
+            trades.append({
+                "signalDate":str(active["signalDate"]),"entry":str(active["entryDate"]),"exit":str(x.index[i]),
+                "side":"LONG" if position==1 else "SHORT","entryPrice":round(active["entry"],6),"exitPrice":round(exit_px,6),
+                "stopLoss":round(active["initialStop"],6),"finalStop":round(active["stop"],6),"takeProfit":round(active["take"],6),
+                "stakeEUR":round(active["stake"],2),"grossExposureEUR":round(active["exposure"],2),"leverage":active["leverage"],
+                "usesLeverage":bool(active["leverage"]>1),"initialRiskEUR":round(active["risk"],2),"profitEUR":round(float(pnl),2),
+                "reason":pending_exit,"trendScore":int(ctx.get("score",0)),"trendRegime":ctx.get("regime"),
+                "volatilityRegime":ctx.get("volatilityRegime"),"mlProbability":None if active["mlProbability"] is None else round(float(active["mlProbability"]),4),
+                "rMultiple":round(float(diag["rMultiple"]),3),"mfeR":round(float(diag["mfeR"]),3),"maeR":round(float(diag["maeR"]),3),
+                "captureRatio":None if pd.isna(diag["captureRatio"]) else round(float(diag["captureRatio"]),3),
+            })
+            position=0; active=None; entry_i=None; pending_exit=None
 
         if position == 0 and pending is not None:
             side = int(pending["side"])
@@ -323,6 +388,7 @@ def backtest_v33(
                     "entryDate": x.index[i],
                     "entry": entry,
                     "stop": float(plan["stopLoss"]),
+                    "initialStop": float(plan["stopLoss"]),
                     "take": float(plan["takeProfit"]),
                     "stake": float(plan["stakeEUR"]),
                     "leverage": int(plan["leverage"]),
@@ -372,11 +438,13 @@ def backtest_v33(
                     "side": "LONG" if position == 1 else "SHORT",
                     "entryPrice": round(active["entry"], 6),
                     "exitPrice": round(exit_px, 6),
-                    "stopLoss": round(active["stop"], 6),
+                    "stopLoss": round(active["initialStop"], 6),
+                    "finalStop": round(active["stop"], 6),
                     "takeProfit": round(active["take"], 6),
                     "stakeEUR": round(active["stake"], 2),
                     "grossExposureEUR": round(active["exposure"], 2),
                     "leverage": active["leverage"],
+                    "usesLeverage": bool(active["leverage"] > 1),
                     "initialRiskEUR": round(active["risk"], 2),
                     "profitEUR": round(float(pnl), 2),
                     "reason": reason,
@@ -392,6 +460,19 @@ def backtest_v33(
                 position = 0
                 active = None
                 entry_i = None
+                pending_exit = None
+            else:
+                # Protection is derived from this completed close and becomes
+                # effective next bar only.
+                new_stop, _ = _protective_stop_after_close(
+                    active["stop"], active["entry"], position,
+                    abs(active["entry"] - active["initialStop"]), row, policy
+                )
+                active["stop"] = new_stop
+                if policy.exit_on_opposite_signal:
+                    opp = technical_candidate_row(row, p)
+                    if opp == -position:
+                        pending_exit = "OPPOSITE_SIGNAL"
 
         mtm = capital
         if position and active is not None:
@@ -425,11 +506,13 @@ def backtest_v33(
             "side": "LONG" if position == 1 else "SHORT",
             "entryPrice": round(active["entry"], 6),
             "currentPrice": round(mark, 6),
-            "stopLoss": round(active["stop"], 6),
+            "stopLoss": round(active["initialStop"], 6),
+            "currentStop": round(active["stop"], 6),
             "takeProfit": round(active["take"], 6),
             "stakeEUR": round(active["stake"], 2),
             "grossExposureEUR": round(active["exposure"], 2),
             "leverage": active["leverage"],
+            "usesLeverage": bool(active["leverage"] > 1),
             "riskAtStopEUR": round(active["risk"], 2),
             "unrealizedPnLEUR": round(float(unrealized), 2),
             "trendScore": int(ctx.get("score", 0)),
