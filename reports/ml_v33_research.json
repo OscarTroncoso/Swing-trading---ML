@@ -53,8 +53,8 @@
         "testEvents": 594,
         "meanAUC": 0.4703684781782982,
         "medianAUC": 0.45591119878083886,
-        "meanBrier": 0.2653108102021934,
-        "score": 0.2050576679761048
+        "meanBrier": 0.26531081020219344,
+        "score": 0.20505766797610475
       },
       {
         "model": "hist_gradient_boosting",
@@ -84,7 +84,7 @@
       "exposurePct": 87.37,
       "avgLeverage": 10.583,
       "maxLeverageUsed": 14,
-      "leveragedTrades": 0,
+      "leveragedTrades": 12,
       "expectancyR": -0.197,
       "avgMFER": 1.14,
       "avgMAER": 0.944,
@@ -114,7 +114,7 @@
       "exposurePct": 87.37,
       "avgLeverage": 10.583,
       "maxLeverageUsed": 14,
-      "leveragedTrades": 0,
+      "leveragedTrades": 12,
       "expectancyR": -0.197,
       "avgMFER": 1.14,
       "avgMAER": 0.944,

@@ -1,3 +1,3 @@
 variant,accountCurrency,initialCapitalEUR,finalCapitalEUR,totalReturn,winRate,maxDrawdown,profitFactor,totalTrades,sharpe,sortino,avgTradeEUR,exposurePct,avgLeverage,maxLeverageUsed,leveragedTrades,expectancyR,avgMFER,avgMAER,medianWinnerCaptureRatio,stoppedTrades,takeProfitTrades,timeExitTrades,realizedCapitalEUR,openPositions,countertrendVetoes,avgStakeEUR,avgGrossExposureEUR
-V3.3 no ML,EUR,1000.0,978.28,-2.1719,25.0,4.577,0.6097,12,-0.4841,-0.6887,-2.85,87.37,10.583,14,0,-0.197,1.14,0.944,0.992,9,3,0,965.82,1,0,99.83,1056.25
-V3.3 ML soft sizing,EUR,1000.0,979.39,-2.0607,25.0,4.4594,0.5996,12,-0.4795,-0.6527,-2.79,87.37,10.583,14,0,-0.197,1.14,0.944,0.992,9,3,0,966.59,1,0,95.02,984.07
+V3.3 no ML,EUR,1000.0,978.28,-2.1719,25.0,4.577,0.6097,12,-0.4841,-0.6887,-2.85,87.37,10.583,14,12,-0.197,1.14,0.944,0.992,9,3,0,965.82,1,0,99.83,1056.25
+V3.3 ML soft sizing,EUR,1000.0,979.39,-2.0607,25.0,4.4594,0.5996,12,-0.4795,-0.6527,-2.79,87.37,10.583,14,12,-0.197,1.14,0.944,0.992,9,3,0,966.59,1,0,95.02,984.07
