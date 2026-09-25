@@ -1,4 +1,4 @@
-name: Update EURUSD V3.2 dashboard
+name: Update EURUSD V3.3 dashboard
 on:
   workflow_dispatch:
   schedule:
@@ -16,16 +16,14 @@ jobs:
           cache: 'pip'
       - run: pip install -r requirements.txt
       - run: pytest -q
-      - name: Update current V3.2 dashboard on one frozen OHLC sample
+      - name: Update V3.3 dashboard
         run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/eurusd_daily.csv
-      - name: Benchmark report
-        run: python scripts/backtest_2026.py --csv data/eurusd_daily.csv --start 2026-01-01
-      - name: Stop diagnostics
-        run: python scripts/stop_diagnostics.py --csv data/eurusd_daily.csv --start 2026-01-01
+      - name: V3.1 V3.2 V3.3 comparison
+        run: python scripts/backtest_v33.py --csv data/eurusd_daily.csv --start 2026-01-01
       - name: Commit outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json data.equity.csv data/eurusd_daily.csv reports/backtest_2026.json reports/backtest_2026_comparison.csv reports/stop_diagnostics.csv reports/stop_diagnostics.json
-          git diff --cached --quiet || git commit -m "chore: refresh EURUSD V3.2 dashboard"
+          git add data.json data.equity.csv data/eurusd_daily.csv reports/backtest_v33.json reports/backtest_v33_comparison.csv
+          git diff --cached --quiet || git commit -m "chore: refresh EURUSD V3.3 dashboard"
           git push
