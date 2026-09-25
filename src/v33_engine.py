@@ -428,7 +428,7 @@ def backtest_v33(
                 capital += pnl
                 diag = _trade_metrics(
                     active["entry"], exit_px, active["stake"], active["leverage"], position,
-                    active["risk"], float(fav), float(adv), abs(active["entry"] - active["stop"]),
+                    active["risk"], float(fav), float(adv), abs(active["entry"] - active["initialStop"]),
                 )
                 ctx = active["plan"]["trend"]
                 trades.append({
