@@ -119,11 +119,11 @@ def _models(seed: int):
     return {
         "logistic": Pipeline([
             ("scale", StandardScaler()),
-            ("model", LogisticRegression(C=0.7, class_weight="balanced", max_iter=3000, random_state=seed)),
+            ("model", LogisticRegression(C=0.7, max_iter=3000, random_state=seed)),
         ]),
         "random_forest": RandomForestClassifier(
             n_estimators=350, max_depth=5, min_samples_leaf=12,
-            class_weight="balanced_subsample", random_state=seed, n_jobs=-1,
+            random_state=seed, n_jobs=-1,
         ),
         "hist_gradient_boosting": HistGradientBoostingClassifier(
             max_depth=3, learning_rate=0.05, max_iter=180,
@@ -161,16 +161,24 @@ def chronological_model_comparison(events: pd.DataFrame, params: ML33Params, fol
             briers.append(brier_score_loss(test.label, prob))
             counts.append(len(test))
         if aucs:
+            # Baseline Brier from the historical class prevalence. A probability
+            # model used for sizing should beat this naive forecast, not only rank.
+            base_rate = float(e.iloc[:cut_points[-1]].label.mean())
+            baseline_brier = float(np.mean([(base_rate - int(y))**2 for y in e.iloc[cut_points[0]:].label]))
+            mean_brier = float(np.mean(briers))
+            brier_skill = 1.0 - mean_brier / baseline_brier if baseline_brier > 0 else -np.inf
             rows.append({
                 "model": name,
                 "folds": len(aucs),
                 "testEvents": int(sum(counts)),
                 "meanAUC": float(np.mean(aucs)),
                 "medianAUC": float(np.median(aucs)),
-                "meanBrier": float(np.mean(briers)),
-                "score": float(np.mean(aucs) - np.mean(briers)),
+                "meanBrier": mean_brier,
+                "baselineBrier": baseline_brier,
+                "brierSkill": float(brier_skill),
+                "score": float(np.mean(aucs) + 0.25*brier_skill),
             })
-    return pd.DataFrame(rows).sort_values(["meanAUC", "meanBrier"], ascending=[False, True]).reset_index(drop=True)
+    return pd.DataFrame(rows).sort_values(["score", "meanAUC"], ascending=[False, False]).reset_index(drop=True)
 
 
 def select_model(events: pd.DataFrame, asof, params: ML33Params):
@@ -185,7 +193,7 @@ def select_model(events: pd.DataFrame, asof, params: ML33Params):
     if cmp.empty:
         return None, {"status": "NO_VALID_MODEL_COMPARISON", "trainingEvents": int(len(train))}
     best = cmp.iloc[0]
-    healthy = bool(best.meanAUC >= params.min_validation_auc)
+    healthy = bool(best.meanAUC >= params.min_validation_auc and best.brierSkill > 0)
     if not healthy:
         return None, {
             "status": "MODEL_HEALTH_GATE",
@@ -193,6 +201,7 @@ def select_model(events: pd.DataFrame, asof, params: ML33Params):
             "selectedModel": str(best.model),
             "validationAUC": float(best.meanAUC),
             "validationBrier": float(best.meanBrier),
+            "brierSkill": float(best.brierSkill),
         }
     model = _models(params.random_state)[str(best.model)]
     model.fit(train[FEATURES], train.label.astype(int))
@@ -202,6 +211,7 @@ def select_model(events: pd.DataFrame, asof, params: ML33Params):
         "selectedModel": str(best.model),
         "validationAUC": float(best.meanAUC),
         "validationBrier": float(best.meanBrier),
+        "brierSkill": float(best.brierSkill),
         "comparison": cmp.to_dict(orient="records"),
     }
 
