@@ -7,19 +7,23 @@
       "model": "logistic",
       "folds": 4,
       "testEvents": 607,
-      "meanAUC": 0.5558537564585952,
-      "medianAUC": 0.5490271377368152,
-      "meanBrier": 0.2557904723865325,
-      "score": 0.30006328407206273
+      "meanAUC": 0.5567972007962521,
+      "medianAUC": 0.5548875855327469,
+      "meanBrier": 0.23210701973456127,
+      "baselineBrier": 0.21723489025474196,
+      "brierSkill": -0.06846105366582411,
+      "score": 0.5396819373797961
     },
     {
       "model": "random_forest",
       "folds": 4,
       "testEvents": 607,
-      "meanAUC": 0.42418381086549967,
-      "medianAUC": 0.40661976911976916,
-      "meanBrier": 0.2657683320378029,
-      "score": 0.15841547882769674
+      "meanAUC": 0.4057360334162991,
+      "medianAUC": 0.40606060606060607,
+      "meanBrier": 0.2490860357972429,
+      "baselineBrier": 0.21723489025474196,
+      "brierSkill": -0.1466207638430017,
+      "score": 0.3690808424555487
     },
     {
       "model": "hist_gradient_boosting",
@@ -28,42 +32,51 @@
       "meanAUC": 0.4233509532845396,
       "medianAUC": 0.40311583577712606,
       "meanBrier": 0.2913836327079731,
-      "score": 0.13196732057656652
+      "baselineBrier": 0.21723489025474196,
+      "brierSkill": -0.34132980372664856,
+      "score": 0.33801850235287745
     }
   ],
   "lastModelMeta": {
     "status": "OK",
-    "trainingEvents": 1079,
+    "trainingEvents": 1081,
     "selectedModel": "logistic",
-    "validationAUC": 0.602666939575233,
-    "validationBrier": 0.2498453550413829,
+    "validationAUC": 0.5560814705919479,
+    "validationBrier": 0.18938755816889852,
+    "brierSkill": 0.0723932767094605,
     "comparison": [
       {
         "model": "logistic",
         "folds": 4,
-        "testEvents": 594,
-        "meanAUC": 0.602666939575233,
-        "medianAUC": 0.5848603943019812,
-        "meanBrier": 0.2498453550413829,
-        "score": 0.3528215845338501
+        "testEvents": 595,
+        "meanAUC": 0.5560814705919479,
+        "medianAUC": 0.5703198826118856,
+        "meanBrier": 0.18938755816889852,
+        "baselineBrier": 0.20416794468357866,
+        "brierSkill": 0.0723932767094605,
+        "score": 0.574179789769313
       },
       {
         "model": "random_forest",
         "folds": 4,
-        "testEvents": 594,
-        "meanAUC": 0.4703684781782982,
-        "medianAUC": 0.45591119878083886,
-        "meanBrier": 0.26531081020219344,
-        "score": 0.20505766797610475
+        "testEvents": 595,
+        "meanAUC": 0.40076309209849637,
+        "medianAUC": 0.40264696441672776,
+        "meanBrier": 0.2083855873908898,
+        "baselineBrier": 0.20416794468357866,
+        "brierSkill": -0.020657712521168214,
+        "score": 0.3955986639682043
       },
       {
         "model": "hist_gradient_boosting",
         "folds": 4,
-        "testEvents": 594,
-        "meanAUC": 0.3654108293398856,
-        "medianAUC": 0.37531190690672167,
-        "meanBrier": 0.3147250494028564,
-        "score": 0.05068577993702922
+        "testEvents": 595,
+        "meanAUC": 0.31683119564283463,
+        "medianAUC": 0.35696393872696147,
+        "meanBrier": 0.24399115028964288,
+        "baselineBrier": 0.20416794468357866,
+        "brierSkill": -0.19505121466439101,
+        "score": 0.2680683919767369
       }
     ]
   },
@@ -72,909 +85,909 @@
       "variant": "V3.3 no ML",
       "accountCurrency": "EUR",
       "initialCapitalEUR": 1000.0,
-      "finalCapitalEUR": 978.28,
-      "totalReturn": -2.1719,
+      "finalCapitalEUR": 969.28,
+      "totalReturn": -3.0723,
       "winRate": 25.0,
-      "maxDrawdown": 4.577,
-      "profitFactor": 0.6097,
+      "maxDrawdown": 4.8583,
+      "profitFactor": 0.5513,
       "totalTrades": 12,
-      "sharpe": -0.4841,
-      "sortino": -0.6887,
-      "avgTradeEUR": -2.85,
+      "sharpe": -0.6923,
+      "sortino": -0.9499,
+      "avgTradeEUR": -3.52,
       "exposurePct": 87.37,
-      "avgLeverage": 10.583,
+      "avgLeverage": 10.5,
       "maxLeverageUsed": 14,
       "leveragedTrades": 12,
-      "expectancyR": -0.197,
+      "expectancyR": -0.251,
       "avgMFER": 1.14,
       "avgMAER": 0.944,
       "medianWinnerCaptureRatio": 0.992,
-      "stoppedTrades": 9,
+      "stoppedTrades": 5,
       "takeProfitTrades": 3,
       "timeExitTrades": 0,
-      "realizedCapitalEUR": 965.82,
+      "realizedCapitalEUR": 957.71,
       "openPositions": 1,
       "countertrendVetoes": 0,
       "avgStakeEUR": 99.83,
-      "avgGrossExposureEUR": 1056.25
+      "avgGrossExposureEUR": 1048.75
     },
     {
       "variant": "V3.3 ML soft sizing",
       "accountCurrency": "EUR",
       "initialCapitalEUR": 1000.0,
-      "finalCapitalEUR": 979.39,
-      "totalReturn": -2.0607,
+      "finalCapitalEUR": 972.31,
+      "totalReturn": -2.7691,
       "winRate": 25.0,
-      "maxDrawdown": 4.4594,
-      "profitFactor": 0.5996,
+      "maxDrawdown": 4.6388,
+      "profitFactor": 0.545,
       "totalTrades": 12,
-      "sharpe": -0.4795,
-      "sortino": -0.6527,
-      "avgTradeEUR": -2.79,
+      "sharpe": -0.652,
+      "sortino": -0.8761,
+      "avgTradeEUR": -3.29,
       "exposurePct": 87.37,
-      "avgLeverage": 10.583,
-      "maxLeverageUsed": 14,
+      "avgLeverage": 10.417,
+      "maxLeverageUsed": 13,
       "leveragedTrades": 12,
-      "expectancyR": -0.197,
+      "expectancyR": -0.251,
       "avgMFER": 1.14,
       "avgMAER": 0.944,
       "medianWinnerCaptureRatio": 0.992,
-      "stoppedTrades": 9,
+      "stoppedTrades": 5,
       "takeProfitTrades": 3,
       "timeExitTrades": 0,
-      "realizedCapitalEUR": 966.59,
+      "realizedCapitalEUR": 960.58,
       "openPositions": 1,
       "countertrendVetoes": 0,
-      "avgStakeEUR": 95.02,
-      "avgGrossExposureEUR": 984.07
+      "avgStakeEUR": 93.25,
+      "avgGrossExposureEUR": 961.14
     }
   ],
   "predictions": [
     {
       "signalDate": "2026-01-12 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4786412590868431,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
+      "validationAUC": 0.5550745477252327,
       "trainingEvents": 1074
     },
     {
       "signalDate": "2026-01-14 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5149366765709166,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5557467385481085,
+      "trainingEvents": 1073
     },
     {
       "signalDate": "2026-01-15 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5802173282305968,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5557467385481085,
+      "trainingEvents": 1073
     },
     {
       "signalDate": "2026-01-16 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5841768949701642,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5563101637847401,
+      "trainingEvents": 1073
     },
     {
       "signalDate": "2026-01-19 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5502794054463717,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5563784937239803,
+      "trainingEvents": 1070
     },
     {
       "signalDate": "2026-01-20 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4262227669822213,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5552131044657189,
+      "trainingEvents": 1069
     },
     {
       "signalDate": "2026-01-23 00:00:00+00:00",
       "side": 1,
-      "probability": 0.42444917567917667,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5466403233457203,
+      "trainingEvents": 1072
     },
     {
       "signalDate": "2026-01-26 00:00:00+00:00",
       "side": 1,
-      "probability": 0.4035891017273692,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5316587295323137,
+      "trainingEvents": 1070
     },
     {
       "signalDate": "2026-01-27 00:00:00+00:00",
       "side": 1,
-      "probability": 0.3733350934899198,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5363121081403165,
+      "trainingEvents": 1076
     },
     {
       "signalDate": "2026-01-28 00:00:00+00:00",
       "side": 1,
-      "probability": 0.35884478971413375,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5422408201389167,
+      "trainingEvents": 1078
     },
     {
       "signalDate": "2026-01-29 00:00:00+00:00",
       "side": 1,
-      "probability": 0.41731631348914755,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5422408201389167,
+      "trainingEvents": 1078
     },
     {
       "signalDate": "2026-01-30 00:00:00+00:00",
       "side": 1,
-      "probability": 0.3589680325062905,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5406170455630548,
+      "trainingEvents": 1078
     },
     {
       "signalDate": "2026-02-02 00:00:00+00:00",
       "side": 1,
-      "probability": 0.3664839559468662,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5385636423105337,
+      "trainingEvents": 1075
     },
     {
       "signalDate": "2026-02-11 00:00:00+00:00",
       "side": 1,
-      "probability": 0.4284499690246578,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5340135442080802,
+      "trainingEvents": 1075
     },
     {
       "signalDate": "2026-02-12 00:00:00+00:00",
       "side": 1,
-      "probability": 0.39402082047699155,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5340135442080802,
+      "trainingEvents": 1075
     },
     {
       "signalDate": "2026-03-02 00:00:00+00:00",
       "side": -1,
-      "probability": 0.593393179572352,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5390566171359985,
+      "trainingEvents": 1078
     },
     {
       "signalDate": "2026-03-03 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6964626335801207,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5399705832725713,
+      "trainingEvents": 1079
     },
     {
       "signalDate": "2026-03-04 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6087518208026418,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5427015435371745,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-05 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5962768143106248,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5427015435371745,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-06 00:00:00+00:00",
       "side": -1,
-      "probability": 0.618150378980783,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5427015435371745,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-09 00:00:00+00:00",
       "side": -1,
-      "probability": 0.596308564091718,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.544435789496235,
+      "trainingEvents": 1079
     },
     {
       "signalDate": "2026-03-10 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5478841484426822,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.544435789496235,
+      "trainingEvents": 1079
     },
     {
       "signalDate": "2026-03-11 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6633333934954844,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5438769026425442,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-12 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6291568817589082,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5438769026425442,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-13 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6556500779491915,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.5438769026425442,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-16 00:00:00+00:00",
       "side": -1,
-      "probability": 0.622408769494114,
+      "probability": 0.40365870130662734,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-17 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4924599408878393,
+      "probability": 0.28566736902807105,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-18 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5014567372546197,
+      "probability": 0.29104738152315807,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-19 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5290018022541344,
+      "probability": 0.3159474524589733,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-03-23 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5286993032205733,
+      "probability": 0.3064859364217265,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5615516989352606,
-      "trainingEvents": 1074
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-10 00:00:00+00:00",
       "side": 1,
-      "probability": 0.4248095630560347,
+      "probability": 0.22887461749248716,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-13 00:00:00+00:00",
       "side": 1,
-      "probability": 0.4528630951962241,
+      "probability": 0.24766117353958747,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-14 00:00:00+00:00",
       "side": 1,
-      "probability": 0.42946591150443236,
+      "probability": 0.22899227258194627,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-15 00:00:00+00:00",
       "side": 1,
-      "probability": 0.3504482403389816,
+      "probability": 0.1822548645083875,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-16 00:00:00+00:00",
       "side": 1,
-      "probability": 0.36717102687578496,
+      "probability": 0.19174613429464815,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-17 00:00:00+00:00",
       "side": 1,
-      "probability": 0.3005140603947391,
+      "probability": 0.15189012360821083,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-20 00:00:00+00:00",
       "side": 1,
-      "probability": 0.28365604076368295,
+      "probability": 0.14039420775292988,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-21 00:00:00+00:00",
       "side": 1,
-      "probability": 0.234407244591454,
+      "probability": 0.11338414745194114,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-04-22 00:00:00+00:00",
       "side": 1,
-      "probability": 0.24799027995490794,
+      "probability": 0.12402835058933402,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-12 00:00:00+00:00",
       "side": 1,
-      "probability": 0.6122145785819242,
+      "probability": 0.41806731231679317,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-18 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4770813641566384,
+      "probability": 0.2981555125795303,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-20 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5298435494725293,
+      "probability": 0.34717206429706604,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-21 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5648815041328544,
+      "probability": 0.3763947778411971,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-22 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5921557706953542,
+      "probability": 0.4019367523077218,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-26 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5533311183311523,
+      "probability": 0.3657113324729302,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-27 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5456436886179429,
+      "probability": 0.3549072917387956,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-05-28 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5744754416747645,
+      "probability": 0.38011612065510847,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-06-03 00:00:00+00:00",
       "side": -1,
-      "probability": 0.545290235149275,
+      "probability": 0.34920228461210684,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-06-04 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5184498955936979,
+      "probability": 0.3235808567014168,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-06-05 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5968835994728736,
+      "probability": 0.39679583372444865,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6184549017551753,
+      "trainingEvents": 1080
     },
     {
       "signalDate": "2026-06-08 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5250906661301658,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.551690135397103,
+      "trainingEvents": 1067
     },
     {
       "signalDate": "2026-06-09 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4526607743136331,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.551690135397103,
+      "trainingEvents": 1067
     },
     {
       "signalDate": "2026-06-10 00:00:00+00:00",
       "side": -1,
-      "probability": 0.477212464809487,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.551690135397103,
+      "trainingEvents": 1067
     },
     {
       "signalDate": "2026-06-11 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5052000917073349,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.551690135397103,
+      "trainingEvents": 1067
     },
     {
       "signalDate": "2026-06-12 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4785365560922227,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.551690135397103,
+      "trainingEvents": 1067
     },
     {
       "signalDate": "2026-06-18 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5576179590081008,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.5516825286110562,
+      "trainingEvents": 1068
     },
     {
       "signalDate": "2026-06-19 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4912288548229634,
-      "modelStatus": "OK",
+      "probability": null,
+      "modelStatus": "MODEL_HEALTH_GATE",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.5516825286110562,
+      "trainingEvents": 1068
     },
     {
       "signalDate": "2026-06-22 00:00:00+00:00",
       "side": -1,
-      "probability": 0.46636622899186037,
+      "probability": 0.22495266760114038,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-23 00:00:00+00:00",
       "side": -1,
-      "probability": 0.512233722617817,
+      "probability": 0.25032748943159583,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-24 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5154878291662878,
+      "probability": 0.2403254644062253,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-25 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5365182672670952,
+      "probability": 0.25842439970332,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-26 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5150469074304966,
+      "probability": 0.24307983940947883,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-29 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4987749643927611,
+      "probability": 0.23758884191955387,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-06-30 00:00:00+00:00",
       "side": -1,
-      "probability": 0.48281722643971375,
+      "probability": 0.24098168979739334,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-07-01 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5336023156184102,
+      "probability": 0.27282693264745345,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-07-02 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4655593474886249,
+      "probability": 0.2177575093385979,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.5816304739888305,
-      "trainingEvents": 1083
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-07-03 00:00:00+00:00",
       "side": -1,
-      "probability": 0.4000014962008336,
+      "probability": 0.20260805424526476,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-07-31 00:00:00+00:00",
       "side": 1,
-      "probability": 0.44912226066059274,
+      "probability": 0.2503803018482157,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-03 00:00:00+00:00",
       "side": 1,
-      "probability": 0.38732578927967326,
+      "probability": 0.2060210360179442,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-04 00:00:00+00:00",
       "side": 1,
-      "probability": 0.32469508264335145,
+      "probability": 0.1683884696149521,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-05 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2937490837785412,
+      "probability": 0.1484792782615626,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-06 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2757059267687942,
+      "probability": 0.13499228400849708,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-07 00:00:00+00:00",
       "side": 1,
-      "probability": 0.21497347247768447,
+      "probability": 0.10463467287117839,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-10 00:00:00+00:00",
       "side": 1,
-      "probability": 0.22119009342724152,
+      "probability": 0.10594138531088639,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-11 00:00:00+00:00",
       "side": 1,
-      "probability": 0.24947929603347993,
+      "probability": 0.12313787937703494,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-12 00:00:00+00:00",
       "side": 1,
-      "probability": 0.21555346380329474,
+      "probability": 0.10509338503768896,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-13 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2266824399228413,
+      "probability": 0.11069811078728259,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-14 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2192743429636099,
+      "probability": 0.10896079448951233,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-17 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2230671198784302,
+      "probability": 0.10971821727536143,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-18 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2439943769822655,
+      "probability": 0.12099791607573046,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-19 00:00:00+00:00",
       "side": 1,
-      "probability": 0.1856308032513448,
+      "probability": 0.0932960171869191,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-20 00:00:00+00:00",
       "side": 1,
-      "probability": 0.23208481344466148,
+      "probability": 0.1145067405621616,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-21 00:00:00+00:00",
       "side": 1,
-      "probability": 0.26076225759516514,
+      "probability": 0.1306264733842105,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-24 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2260414866621097,
+      "probability": 0.11021522884585419,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-25 00:00:00+00:00",
       "side": 1,
-      "probability": 0.22433622866253464,
+      "probability": 0.1098269443432016,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-26 00:00:00+00:00",
       "side": 1,
-      "probability": 0.2356886437059465,
+      "probability": 0.11535458201343694,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-27 00:00:00+00:00",
       "side": 1,
-      "probability": 0.20483381001665432,
+      "probability": 0.09871306546844259,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-08-28 00:00:00+00:00",
       "side": 1,
-      "probability": 0.25940437560124296,
+      "probability": 0.12507586819953254,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.6366079973379859,
+      "trainingEvents": 1071
     },
     {
       "signalDate": "2026-09-17 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5209303602425451,
+      "probability": 0.32294103404421975,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     },
     {
       "signalDate": "2026-09-18 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5354696786566316,
+      "probability": 0.3294964420994532,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     },
     {
       "signalDate": "2026-09-21 00:00:00+00:00",
       "side": -1,
-      "probability": 0.5585666963399238,
+      "probability": 0.3481944699532855,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     },
     {
       "signalDate": "2026-09-22 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6221539914100137,
+      "probability": 0.3997047891519757,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     },
     {
       "signalDate": "2026-09-23 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6541827169345997,
+      "probability": 0.42254124663417664,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     },
     {
       "signalDate": "2026-09-24 00:00:00+00:00",
       "side": -1,
-      "probability": 0.6360216768934481,
+      "probability": 0.4081945312648168,
       "modelStatus": "OK",
       "model": "logistic",
-      "validationAUC": 0.602666939575233,
-      "trainingEvents": 1079
+      "validationAUC": 0.5560814705919479,
+      "trainingEvents": 1081
     }
   ],
   "promotionAutomatic": false
