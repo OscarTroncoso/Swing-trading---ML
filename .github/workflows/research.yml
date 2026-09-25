@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: v3.3-risk-ml-rework
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -25,10 +23,6 @@ jobs:
         run: python scripts/v33_policy_research.py --csv data/research_10y.csv
       - name: ML model-family research on TP-before-SL labels
         run: python scripts/ml_v33_research.py --csv data/research_10y.csv --start 2026-01-01
-      - name: Keep V3.2 diagnostics for historical comparison only
-        run: |
-          python scripts/stop_diagnostics.py --csv data/research_10y.csv --start 2026-01-01
-          python scripts/v32_ablation.py --csv data/research_10y.csv --start 2026-01-01
       - name: Commit refreshed V3.3 research outputs
         run: |
           git config user.name "github-actions[bot]"
