@@ -3,22 +3,31 @@
     "currency": "EUR",
     "initialCapitalEUR": 1000.0
   },
-  "risk": {
-    "sizingMode": "stake_leverage",
-    "baseRiskPerTrade": 0.005,
-    "minRiskPerTrade": 0.0025,
-    "maxRiskPerTrade": 0.01,
-    "baseStakePct": 0.10,
+  "position": {
+    "baseStakeEUR": 100.0,
     "minStakeEUR": 25.0,
-    "maxStakePct": 0.25,
-    "minLeverage": 1.0,
+    "maxStakePctEquity": 0.25,
+    "baseRiskPctEquity": 0.01,
+    "minRiskPctEquity": 0.005,
+    "maxRiskPctEquity": 0.015,
+    "minLeverage": 1,
+    "maxLeverage": 30
+  },
+  "risk": {
+    "sizingMode": "adaptive_risk",
+    "fixedNotionalEUR": 1000.0,
+    "baseRiskPerTrade": 0.01,
+    "minRiskPerTrade": 0.005,
+    "maxRiskPerTrade": 0.015,
     "maxLeverage": 30.0,
-    "leverageStep": 1.0,
+    "lotStepUnits": 1.0,
+    "minUnits": 1.0,
+    "absoluteMaxUnits": 0.0,
     "volatilityTarget": 0.08,
     "volScaleMin": 0.65,
     "volScaleMax": 1.25,
-    "qualityScaleMin": 0.80,
-    "qualityScaleMax": 1.20
+    "qualityScaleMin": 0.75,
+    "qualityScaleMax": 1.15
   },
   "execution": {
     "spreadPips": 0.8,
@@ -42,6 +51,10 @@
   },
   "trend": {
     "enabled": false,
+    "softSizing": true,
+    "hardCountertrendVeto": false,
+    "countertrendMaxScore": 1,
+    "countertrendMinADX": 28.0,
     "emaFast": 50,
     "emaSlow": 200,
     "slopeBars": 10,
@@ -53,38 +66,35 @@
     "volRegimeMinObs": 60
   },
   "stop": {
-    "mode": "atr_structure_guard",
-    "atrLowVol": 1.6,
-    "atrNormal": 1.8,
-    "atrHighVol": 2.0,
+    "mode": "atr",
+    "atrNormal": 1.5,
     "structureLookback": 8,
     "structureBufferATR": 0.10,
-    "maxStopATR": 3.0,
-    "targetRR": 1.55,
-    "maxHoldingBars": 0
-  },
-  "profitProtection": {
-    "enabled": false,
-    "breakevenTriggerR": 1.25,
-    "trailingTriggerR": 1.75,
+    "maxStructureExtensionATR": 0.25,
+    "targetRR": 2.2,
+    "maxHoldingBars": 0,
+    "breakevenTriggerR": 0.0,
+    "trailingTriggerR": 0.0,
     "trailingATR": 1.5,
-    "structureLookback": 5
+    "exitOnOppositeSignal": false,
+    "invalidationMode": "none",
+    "partialTakeR": 0.0,
+    "partialFraction": 0.0,
+    "partialMoveStopToBE": true
   },
   "ml": {
     "enabled": true,
-    "liveMode": "score_only",
-    "threshold": 0.52,
-    "confidenceReference": 0.70,
-    "retrainEveryBars": 40,
+    "liveMode": "soft_research",
+    "threshold": 0.50,
+    "softMinMultiplier": 0.75,
+    "softMaxMultiplier": 1.20,
+    "retrainEveryBars": 60,
     "minTrainEvents": 120,
     "calibrationFraction": 0.20,
     "featureSet": "compact",
     "maxTrainYears": 8,
     "C": 0.7,
-    "minValidationAUC": 0.53,
-    "labelHorizonBars": 60,
-    "eventSpacingBars": 3,
-    "candidateModels": ["logistic", "random_forest", "hist_gradient_boosting"]
+    "minValidationAUC": 0.52
   },
   "backtest": {
     "warmupStart": "2025-01-01",
