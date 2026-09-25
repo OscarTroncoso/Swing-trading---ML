@@ -1,6 +1,14 @@
 name: Full V3.3 research suite
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - v3.3-risk-ml-rework
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'config.json'
+      - '.github/workflows/research.yml'
 permissions:
   contents: write
 jobs:
