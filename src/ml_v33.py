@@ -146,8 +146,12 @@ def chronological_model_comparison(events: pd.DataFrame, params: ML33Params, fol
             nxt = cut_points[k + 1] if k + 1 < len(cut_points) else n
             if nxt <= cut:
                 continue
-            train = e.iloc[:cut]
             test = e.iloc[cut:nxt]
+            test_start = test.signalDate.iloc[0]
+            # Purged chronological fold: a training event is admissible only if
+            # its TP/SL outcome was already known before the test block starts.
+            train = e.iloc[:cut]
+            train = train[train.outcomeEnd < test_start]
             if train.label.nunique() < 2 or test.label.nunique() < 2 or len(test) < 15:
                 continue
             model = _models(params.random_state)[name]
