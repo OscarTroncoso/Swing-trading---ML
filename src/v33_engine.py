@@ -432,14 +432,22 @@ def backtest_v33(
             if position == 1:
                 fav = max(float(fav), float(row.high))
                 adv = min(float(adv), float(row.low))
-                if row.low <= active["stop"]:
+                if row.open <= active["stop"]:
+                    reason, raw_exit = "SL_GAP", float(row.open)
+                elif row.open >= active["take"]:
+                    reason, raw_exit = "TP", active["take"]
+                elif row.low <= active["stop"]:
                     reason, raw_exit = "SL", active["stop"]
                 elif row.high >= active["take"]:
                     reason, raw_exit = "TP", active["take"]
             else:
                 fav = min(float(fav), float(row.low))
                 adv = max(float(adv), float(row.high))
-                if row.high >= active["stop"]:
+                if row.open >= active["stop"]:
+                    reason, raw_exit = "SL_GAP", float(row.open)
+                elif row.open <= active["take"]:
+                    reason, raw_exit = "TP", active["take"]
+                elif row.high >= active["stop"]:
                     reason, raw_exit = "SL", active["stop"]
                 elif row.low <= active["take"]:
                     reason, raw_exit = "TP", active["take"]
