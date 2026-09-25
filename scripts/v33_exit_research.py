@@ -50,6 +50,13 @@ def main():
       ("opposite_signal",replace(base,max_holding_bars=0,breakeven_trigger_r=0,trailing_trigger_r=0,exit_on_opposite_signal=True)),
       ("be1_opposite",replace(base,max_holding_bars=0,breakeven_trigger_r=1.0,trailing_trigger_r=0,exit_on_opposite_signal=True)),
       ("be1_trail1.5_opposite",replace(base,max_holding_bars=0,breakeven_trigger_r=1.0,trailing_trigger_r=1.5,trailing_atr=1.5,exit_on_opposite_signal=True)),
+      ("invalidate_macd",replace(base,max_holding_bars=0,invalidation_mode="macd")),
+      ("invalidate_sma50",replace(base,max_holding_bars=0,invalidation_mode="sma50")),
+      ("invalidate_rsi50",replace(base,max_holding_bars=0,invalidation_mode="rsi50")),
+      ("invalidate_core2",replace(base,max_holding_bars=0,invalidation_mode="core2")),
+      ("core2_be1",replace(base,max_holding_bars=0,invalidation_mode="core2",breakeven_trigger_r=1.0)),
+      ("core2_be1_trail1.5",replace(base,max_holding_bars=0,invalidation_mode="core2",breakeven_trigger_r=1.0,trailing_trigger_r=1.5,trailing_atr=1.5)),
+      ("macd_be1",replace(base,max_holding_bars=0,invalidation_mode="macd",breakeven_trigger_r=1.0)),
     ]
     rows=[]; yearly={}
     for name,pol in variants:
@@ -70,7 +77,7 @@ def main():
       "selectedPolicy":{
         "breakevenTriggerR":pol.breakeven_trigger_r,"trailingTriggerR":pol.trailing_trigger_r,
         "trailingATR":pol.trailing_atr,"exitOnOppositeSignal":pol.exit_on_opposite_signal,
-        "maxHoldingBars":pol.max_holding_bars
+        "invalidationMode":pol.invalidation_mode,"maxHoldingBars":pol.max_holding_bars
       },
       "selectedTrainYears":yearly[selected],
       "selected2026Test":test["metrics"],
