@@ -24,7 +24,7 @@ jobs:
       - name: Tests
         run: pytest -q
       - name: Freeze exact 10-year EURUSD OHLC
-        run: python scripts/update_data.py --period 10y --backtest-start 2026-01-01 --out data.json --market-csv-out data/research_10y.csv
+        run: python scripts/fetch_market.py --period 10y --out data/research_10y.csv
       - name: Compare V3.1 V3.2 V3.3
         run: python scripts/backtest_v33.py --csv data/research_10y.csv --start 2026-01-01
       - name: Robust V3.3 policy search using 2020-2025 only
