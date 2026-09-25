@@ -55,6 +55,7 @@ class V33Policy:
     trailing_trigger_r: float = 0.0   # 0 = disabled; effective next bar.
     trailing_atr: float = 1.5
     exit_on_opposite_signal: bool = False  # execute next open, never same close.
+    invalidation_mode: str = "none"  # none | macd | sma50 | rsi50 | core2
     ml_soft_min_multiplier: float = 0.75
     ml_soft_max_multiplier: float = 1.20
 
@@ -90,6 +91,7 @@ def load_v33_policy(path: str | Path = "config.json") -> V33Policy:
         trailing_trigger_r=float(st.get("trailingTriggerR", 0.0)),
         trailing_atr=float(st.get("trailingATR", 1.5)),
         exit_on_opposite_signal=bool(st.get("exitOnOppositeSignal", False)),
+        invalidation_mode=str(st.get("invalidationMode", "none")),
         ml_soft_min_multiplier=float(ml.get("softMinMultiplier", 0.75)),
         ml_soft_max_multiplier=float(ml.get("softMaxMultiplier", 1.20)),
     )
@@ -162,8 +164,11 @@ def _stop_target(entry: float, side: int, atr: float, row: pd.Series, policy: V3
 def _ml_multiplier(probability: float | None, policy: V33Policy) -> float:
     if probability is None or not np.isfinite(probability):
         return 1.0
-    # ML is a soft modifier only. It never vetoes a technical signal.
-    q = float(np.clip((probability - 0.50) / 0.15, -1.0, 1.0))
+    # For a TP at R times the stop, the pre-cost break-even hit probability is
+    # 1/(1+R), not 50%. A calibrated ML probability is assessed around that
+    # economic threshold. ML remains a soft modifier only.
+    breakeven_p = 1.0 / (1.0 + max(policy.target_rr, 1e-6))
+    q = float(np.clip((probability - breakeven_p) / 0.15, -1.0, 1.0))
     if q >= 0:
         return 1.0 + q * (policy.ml_soft_max_multiplier - 1.0)
     return 1.0 + (-q) * (policy.ml_soft_min_multiplier - 1.0)
@@ -259,6 +264,26 @@ def position_plan_v33(
         "trend": ctx,
         **levels,
     }
+
+
+def _thesis_invalidated(row: pd.Series, side: int, p: Params, policy: V33Policy) -> bool:
+    """Close-based thesis invalidation; execution occurs at next open."""
+    mode = str(policy.invalidation_mode or "none").lower()
+    if mode == "none":
+        return False
+    if mode == "macd":
+        return bool((row.macd_hist <= 0) if side == 1 else (row.macd_hist >= 0))
+    if mode == "sma50":
+        return bool((row.close <= row.sma50) if side == 1 else (row.close >= row.sma50))
+    if mode == "rsi50":
+        return bool((row.rsi <= 50) if side == 1 else (row.rsi >= 50))
+    if mode == "core2":
+        confirmations = 0
+        confirmations += int(row.rsi > 50) if side == 1 else int(row.rsi < 50)
+        confirmations += int(row.close > row.sma50) if side == 1 else int(row.close < row.sma50)
+        confirmations += int(row.macd_hist > 0) if side == 1 else int(row.macd_hist < 0)
+        return confirmations < 2
+    raise ValueError(f"Unknown invalidation_mode={policy.invalidation_mode}")
 
 
 def _protective_stop_after_close(
@@ -473,6 +498,8 @@ def backtest_v33(
                     opp = technical_candidate_row(row, p)
                     if opp == -position:
                         pending_exit = "OPPOSITE_SIGNAL"
+                if pending_exit is None and _thesis_invalidated(row, position, p, policy):
+                    pending_exit = "THESIS_INVALIDATION"
 
         mtm = capital
         if position and active is not None:
