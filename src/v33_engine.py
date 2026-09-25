@@ -59,6 +59,10 @@ class V33Policy:
     partial_take_r: float = 0.0       # 0 = disabled
     partial_fraction: float = 0.0     # fraction of exposure closed at partial_take_r
     partial_move_stop_to_be: bool = True
+    stagnation_bars: int = 0
+    stagnation_min_mfe_r: float = 0.50
+    stagnation_min_close_r: float = 0.0
+    stagnation_require_weak_thesis: bool = True
     ml_soft_min_multiplier: float = 0.75
     ml_soft_max_multiplier: float = 1.20
 
@@ -98,6 +102,10 @@ def load_v33_policy(path: str | Path = "config.json") -> V33Policy:
         partial_take_r=float(st.get("partialTakeR", 0.0)),
         partial_fraction=float(st.get("partialFraction", 0.0)),
         partial_move_stop_to_be=bool(st.get("partialMoveStopToBE", True)),
+        stagnation_bars=int(st.get("stagnationBars", 0)),
+        stagnation_min_mfe_r=float(st.get("stagnationMinMFER", 0.50)),
+        stagnation_min_close_r=float(st.get("stagnationMinCloseR", 0.0)),
+        stagnation_require_weak_thesis=bool(st.get("stagnationRequireWeakThesis", True)),
         ml_soft_min_multiplier=float(ml.get("softMinMultiplier", 0.75)),
         ml_soft_max_multiplier=float(ml.get("softMaxMultiplier", 1.20)),
     )
@@ -566,6 +574,22 @@ def backtest_v33(
                         pending_exit = "OPPOSITE_SIGNAL"
                 if pending_exit is None and _thesis_invalidated(row, position, p, policy):
                     pending_exit = "THESIS_INVALIDATION"
+                # Dynamic stagnation exit: there is no fixed maximum holding period.
+                # A trade may remain open indefinitely while it makes meaningful
+                # progress. Only a stale trade whose thesis has weakened is queued
+                # for exit at the next open.
+                if pending_exit is None and policy.stagnation_bars > 0 and i - entry_i >= policy.stagnation_bars:
+                    initial_risk = max(abs(active["entry"] - active["initialStop"]), 1e-12)
+                    close_r = ((float(row.close) - active["entry"]) * position) / initial_risk
+                    mfe_r = max(0.0, (float(fav) - active["entry"]) * position) / initial_risk
+                    confirmations = 0
+                    confirmations += int(row.rsi > 50) if position == 1 else int(row.rsi < 50)
+                    confirmations += int(row.close > row.sma50) if position == 1 else int(row.close < row.sma50)
+                    confirmations += int(row.macd_hist > 0) if position == 1 else int(row.macd_hist < 0)
+                    weak = confirmations < 2
+                    stale = mfe_r < policy.stagnation_min_mfe_r and close_r < policy.stagnation_min_close_r
+                    if stale and (weak or not policy.stagnation_require_weak_thesis):
+                        pending_exit = "STAGNATION"
 
         mtm = capital
         if position and active is not None:
@@ -667,5 +691,5 @@ def current_snapshot_v33(
         "volatilityRegime": volatility_regime(row),
         "countertrendVeto": vetoed,
         "positionPlan": plan,
-        "exitPolicy": "TP_SL_ONLY" if policy.max_holding_bars <= 0 else f"TP_SL_OR_{policy.max_holding_bars}_BARS",
+        "exitPolicy": ("TP_SL_DYNAMIC_STAGNATION" if policy.stagnation_bars > 0 else "TP_SL_ONLY") if policy.max_holding_bars <= 0 else f"TP_SL_OR_{policy.max_holding_bars}_BARS",
     }
