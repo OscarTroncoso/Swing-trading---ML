@@ -57,6 +57,12 @@ def main():
       ("core2_be1",replace(base,max_holding_bars=0,invalidation_mode="core2",breakeven_trigger_r=1.0)),
       ("core2_be1_trail1.5",replace(base,max_holding_bars=0,invalidation_mode="core2",breakeven_trigger_r=1.0,trailing_trigger_r=1.5,trailing_atr=1.5)),
       ("macd_be1",replace(base,max_holding_bars=0,invalidation_mode="macd",breakeven_trigger_r=1.0)),
+      ("partial_0.75R_25pct",replace(base,max_holding_bars=0,partial_take_r=.75,partial_fraction=.25,partial_move_stop_to_be=True)),
+      ("partial_1R_25pct",replace(base,max_holding_bars=0,partial_take_r=1.0,partial_fraction=.25,partial_move_stop_to_be=True)),
+      ("partial_1R_50pct",replace(base,max_holding_bars=0,partial_take_r=1.0,partial_fraction=.50,partial_move_stop_to_be=True)),
+      ("partial_1.25R_50pct",replace(base,max_holding_bars=0,partial_take_r=1.25,partial_fraction=.50,partial_move_stop_to_be=True)),
+      ("partial_1R_50pct_trail1.5",replace(base,max_holding_bars=0,partial_take_r=1.0,partial_fraction=.50,partial_move_stop_to_be=True,trailing_trigger_r=1.5,trailing_atr=1.5)),
+      ("partial_1R_50pct_opposite",replace(base,max_holding_bars=0,partial_take_r=1.0,partial_fraction=.50,partial_move_stop_to_be=True,exit_on_opposite_signal=True)),
     ]
     rows=[]; yearly={}
     for name,pol in variants:
@@ -77,7 +83,9 @@ def main():
       "selectedPolicy":{
         "breakevenTriggerR":pol.breakeven_trigger_r,"trailingTriggerR":pol.trailing_trigger_r,
         "trailingATR":pol.trailing_atr,"exitOnOppositeSignal":pol.exit_on_opposite_signal,
-        "invalidationMode":pol.invalidation_mode,"maxHoldingBars":pol.max_holding_bars
+        "invalidationMode":pol.invalidation_mode,"partialTakeR":pol.partial_take_r,
+        "partialFraction":pol.partial_fraction,"partialMoveStopToBE":pol.partial_move_stop_to_be,
+        "maxHoldingBars":pol.max_holding_bars
       },
       "selectedTrainYears":yearly[selected],
       "selected2026Test":test["metrics"],
