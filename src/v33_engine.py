@@ -56,6 +56,9 @@ class V33Policy:
     trailing_atr: float = 1.5
     exit_on_opposite_signal: bool = False  # execute next open, never same close.
     invalidation_mode: str = "none"  # none | macd | sma50 | rsi50 | core2
+    partial_take_r: float = 0.0       # 0 = disabled
+    partial_fraction: float = 0.0     # fraction of exposure closed at partial_take_r
+    partial_move_stop_to_be: bool = True
     ml_soft_min_multiplier: float = 0.75
     ml_soft_max_multiplier: float = 1.20
 
@@ -92,6 +95,9 @@ def load_v33_policy(path: str | Path = "config.json") -> V33Policy:
         trailing_atr=float(st.get("trailingATR", 1.5)),
         exit_on_opposite_signal=bool(st.get("exitOnOppositeSignal", False)),
         invalidation_mode=str(st.get("invalidationMode", "none")),
+        partial_take_r=float(st.get("partialTakeR", 0.0)),
+        partial_fraction=float(st.get("partialFraction", 0.0)),
+        partial_move_stop_to_be=bool(st.get("partialMoveStopToBE", True)),
         ml_soft_min_multiplier=float(ml.get("softMinMultiplier", 0.75)),
         ml_soft_max_multiplier=float(ml.get("softMaxMultiplier", 1.20)),
     )
@@ -378,8 +384,9 @@ def backtest_v33(
         # A close-based invalidation/opposite signal exits at the NEXT open.
         if position and active is not None and pending_exit is not None:
             exit_px = float(row.open - half_spread - slip if position == 1 else row.open + half_spread + slip)
-            pnl = pnl_eur(active["entry"], exit_px, active["exposure"], position) - _commission(active["exposure"], p)
-            capital += pnl
+            final_leg_pnl = pnl_eur(active["entry"], exit_px, active["exposure"], position) - _commission(active["exposure"], p)
+            capital += final_leg_pnl
+            pnl = active.get("partialPnL", 0.0) + final_leg_pnl
             diag = _trade_metrics(
                 active["entry"], exit_px, active["stake"], active["leverage"], position,
                 active["risk"], float(fav), float(adv), abs(active["entry"] - active["initialStop"]),
@@ -390,10 +397,10 @@ def backtest_v33(
                 "side":"LONG" if position==1 else "SHORT","entryPrice":round(active["entry"],6),"exitPrice":round(exit_px,6),
                 "stopLoss":round(active["initialStop"],6),"finalStop":round(active["stop"],6),"takeProfit":round(active["take"],6),
                 "stakeEUR":round(active["stake"],2),"grossExposureEUR":round(active["exposure"],2),"leverage":active["leverage"],
-                "usesLeverage":bool(active["leverage"]>1),"initialRiskEUR":round(active["risk"],2),"profitEUR":round(float(pnl),2),
+                "usesLeverage":bool(active["leverage"]>1),"initialRiskEUR":round(active["risk"],2),"partialTaken":bool(active.get("partialTaken")),"partialPnLEUR":round(float(active.get("partialPnL",0.0)),2),"partialDate":None if active.get("partialDate") is None else str(active.get("partialDate")),"profitEUR":round(float(pnl),2),
                 "reason":pending_exit,"trendScore":int(ctx.get("score",0)),"trendRegime":ctx.get("regime"),
                 "volatilityRegime":ctx.get("volatilityRegime"),"mlProbability":None if active["mlProbability"] is None else round(float(active["mlProbability"]),4),
-                "rMultiple":round(float(diag["rMultiple"]),3),"mfeR":round(float(diag["mfeR"]),3),"maeR":round(float(diag["maeR"]),3),
+                "rMultiple":round(float(pnl / max(active["risk"], 1e-12)),3),"mfeR":round(float(diag["mfeR"]),3),"maeR":round(float(diag["maeR"]),3),
                 "captureRatio":None if pd.isna(diag["captureRatio"]) else round(float(diag["captureRatio"]),3),
             })
             position=0; active=None; entry_i=None; pending_exit=None
@@ -418,7 +425,12 @@ def backtest_v33(
                     "stake": float(plan["stakeEUR"]),
                     "leverage": int(plan["leverage"]),
                     "exposure": float(plan["grossExposureEUR"]),
+                    "initialExposure": float(plan["grossExposureEUR"]),
                     "risk": float(plan["riskAtStopEUR"]),
+                    "partialTaken": False,
+                    "partialPnL": 0.0,
+                    "partialDate": None,
+                    "beNextBar": False,
                     "mlProbability": prob,
                 }
                 capital -= _commission(active["exposure"], p)
@@ -429,36 +441,77 @@ def backtest_v33(
         reason = raw_exit = None
         if position and active is not None:
             exposure_bars += 1
+            # A break-even stop created by a partial take becomes active only
+            # from the next bar, never retroactively on the trigger bar.
+            if active.get("beNextBar"):
+                active["stop"] = max(active["stop"], active["entry"]) if position == 1 else min(active["stop"], active["entry"])
+                active["beNextBar"] = False
+            initial_risk_price = abs(active["entry"] - active["initialStop"])
+            partial_level = active["entry"] + position * policy.partial_take_r * initial_risk_price if policy.partial_take_r > 0 else np.nan
             if position == 1:
                 fav = max(float(fav), float(row.high))
                 adv = min(float(adv), float(row.low))
                 if row.open <= active["stop"]:
                     reason, raw_exit = "SL_GAP", float(row.open)
-                elif row.open >= active["take"]:
-                    reason, raw_exit = "TP", active["take"]
                 elif row.low <= active["stop"]:
+                    # Conservative same-bar ordering: stop wins over partial/TP.
                     reason, raw_exit = "SL", active["stop"]
-                elif row.high >= active["take"]:
-                    reason, raw_exit = "TP", active["take"]
+                else:
+                    if (
+                        not active["partialTaken"] and policy.partial_take_r > 0
+                        and 0 < policy.partial_fraction < 1 and row.high >= partial_level
+                    ):
+                        frac = float(policy.partial_fraction)
+                        close_exposure = active["initialExposure"] * frac
+                        partial_fill = float(partial_level - half_spread - slip)
+                        ppnl = pnl_eur(active["entry"], partial_fill, close_exposure, position) - _commission(close_exposure, p)
+                        capital += ppnl
+                        active["partialPnL"] += ppnl
+                        active["partialTaken"] = True
+                        active["partialDate"] = x.index[i]
+                        active["exposure"] = max(0.0, active["exposure"] - close_exposure)
+                        if policy.partial_move_stop_to_be:
+                            active["beNextBar"] = True
+                    if row.open >= active["take"]:
+                        reason, raw_exit = "TP", active["take"]
+                    elif row.high >= active["take"]:
+                        reason, raw_exit = "TP", active["take"]
             else:
                 fav = min(float(fav), float(row.low))
                 adv = max(float(adv), float(row.high))
                 if row.open >= active["stop"]:
                     reason, raw_exit = "SL_GAP", float(row.open)
-                elif row.open <= active["take"]:
-                    reason, raw_exit = "TP", active["take"]
                 elif row.high >= active["stop"]:
                     reason, raw_exit = "SL", active["stop"]
-                elif row.low <= active["take"]:
-                    reason, raw_exit = "TP", active["take"]
+                else:
+                    if (
+                        not active["partialTaken"] and policy.partial_take_r > 0
+                        and 0 < policy.partial_fraction < 1 and row.low <= partial_level
+                    ):
+                        frac = float(policy.partial_fraction)
+                        close_exposure = active["initialExposure"] * frac
+                        partial_fill = float(partial_level + half_spread + slip)
+                        ppnl = pnl_eur(active["entry"], partial_fill, close_exposure, position) - _commission(close_exposure, p)
+                        capital += ppnl
+                        active["partialPnL"] += ppnl
+                        active["partialTaken"] = True
+                        active["partialDate"] = x.index[i]
+                        active["exposure"] = max(0.0, active["exposure"] - close_exposure)
+                        if policy.partial_move_stop_to_be:
+                            active["beNextBar"] = True
+                    if row.open <= active["take"]:
+                        reason, raw_exit = "TP", active["take"]
+                    elif row.low <= active["take"]:
+                        reason, raw_exit = "TP", active["take"]
 
             if policy.max_holding_bars > 0 and reason is None and i - entry_i >= policy.max_holding_bars:
                 reason, raw_exit = "TIME", float(row.close)
 
             if reason:
                 exit_px = float(raw_exit - half_spread - slip if position == 1 else raw_exit + half_spread + slip)
-                pnl = pnl_eur(active["entry"], exit_px, active["exposure"], position) - _commission(active["exposure"], p)
-                capital += pnl
+                final_leg_pnl = pnl_eur(active["entry"], exit_px, active["exposure"], position) - _commission(active["exposure"], p)
+                capital += final_leg_pnl
+                pnl = active.get("partialPnL", 0.0) + final_leg_pnl
                 diag = _trade_metrics(
                     active["entry"], exit_px, active["stake"], active["leverage"], position,
                     active["risk"], float(fav), float(adv), abs(active["entry"] - active["initialStop"]),
@@ -479,13 +532,16 @@ def backtest_v33(
                     "leverage": active["leverage"],
                     "usesLeverage": bool(active["leverage"] > 1),
                     "initialRiskEUR": round(active["risk"], 2),
+                    "partialTaken": bool(active.get("partialTaken")),
+                    "partialPnLEUR": round(float(active.get("partialPnL", 0.0)), 2),
+                    "partialDate": None if active.get("partialDate") is None else str(active.get("partialDate")),
                     "profitEUR": round(float(pnl), 2),
                     "reason": reason,
                     "trendScore": int(ctx.get("score", 0)),
                     "trendRegime": ctx.get("regime"),
                     "volatilityRegime": ctx.get("volatilityRegime"),
                     "mlProbability": None if active["mlProbability"] is None else round(float(active["mlProbability"]), 4),
-                    "rMultiple": round(float(diag["rMultiple"]), 3),
+                    "rMultiple": round(float(pnl / max(active["risk"], 1e-12)), 3),
                     "mfeR": round(float(diag["mfeR"]), 3),
                     "maeR": round(float(diag["maeR"]), 3),
                     "captureRatio": None if pd.isna(diag["captureRatio"]) else round(float(diag["captureRatio"]), 3),
@@ -546,6 +602,9 @@ def backtest_v33(
             "takeProfit": round(active["take"], 6),
             "stakeEUR": round(active["stake"], 2),
             "grossExposureEUR": round(active["exposure"], 2),
+            "initialGrossExposureEUR": round(active["initialExposure"], 2),
+            "partialTaken": bool(active.get("partialTaken")),
+            "partialPnLEUR": round(float(active.get("partialPnL", 0.0)), 2),
             "leverage": active["leverage"],
             "usesLeverage": bool(active["leverage"] > 1),
             "riskAtStopEUR": round(active["risk"], 2),
