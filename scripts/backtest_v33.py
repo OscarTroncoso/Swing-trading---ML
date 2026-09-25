@@ -1,6 +1,7 @@
 """Compare V3.1/V3.2 benchmarks with V3.3 TP/SL-only logic."""
 from __future__ import annotations
 import argparse, json, sys
+from dataclasses import replace
 from pathlib import Path
 import pandas as pd
 
@@ -32,7 +33,20 @@ def main():
     df=load_csv(args.csv) if args.csv else fetch_yahoo("EURUSD=X",period=bc.get("downloadHistory","10y"))
 
     v31=backtest_v31_benchmark(df,p,start=start,end=args.end)
-    v32=backtest_v32(df,p,start=start,end=args.end)
+    # Freeze the V3.2 benchmark to its original semantics. V3.3's maxHoldingBars=0
+    # means "no time exit" and must not leak into the old engine.
+    p32=replace(
+        p,
+        initial_capital_eur=policy.initial_capital_eur,
+        max_holding_bars=5,
+        require_trend_filter=True,
+        stop_mode="hybrid_structure",
+        max_leverage=1.5,
+        risk_per_trade=0.005,
+        min_risk_per_trade=0.0025,
+        max_risk_per_trade=0.0075,
+    )
+    v32=backtest_v32(df,p32,start=start,end=args.end)
     v33=backtest_v33(df,p,policy,start=start,end=args.end)
 
     table=pd.DataFrame([
