@@ -1,31 +1,31 @@
 {
   "modelVersion": "3.2.0",
   "modelName": "Trend + Structural Risk Engine",
-  "lastUpdate": "2026-09-26 00:47:16 UTC",
+  "lastUpdate": "2026-09-29 02:12:40 UTC",
   "pair": "EUR/USD",
   "accountCurrency": "EUR",
   "liveMode": "V3_2_CURRENT_ONLY",
   "backtestWindow": {
     "start": "2026-01-01",
-    "end": "2026-09-25"
+    "end": "2026-09-28"
   },
   "warmup": {
-    "historyAvailableFrom": "2016-09-26",
+    "historyAvailableFrom": "2016-09-29",
     "preEvaluationHistoryUsedOnlyForIndicators": true
   },
-  "date": "2026-09-25 00:00:00+00:00",
-  "currentPrice": 1.139212,
-  "rsi": 27.69,
-  "sma50": 1.153825,
-  "ema50": 1.153772,
-  "ema200": 1.156176,
-  "ema50Slope": -0.002778,
-  "macdHist": -0.0024383,
-  "atr": 0.0053546,
-  "adx": 32.4,
-  "plusDI": 9.77,
-  "minusDI": 29.75,
-  "rv20": 0.04047,
+  "date": "2026-09-28 00:00:00+00:00",
+  "currentPrice": 1.137799,
+  "rsi": 25.6,
+  "sma50": 1.15369,
+  "ema50": 1.15308,
+  "ema200": 1.155976,
+  "ema50Slope": -0.003457,
+  "macdHist": -0.0024306,
+  "atr": 0.0052513,
+  "adx": 33.96,
+  "plusDI": 9.08,
+  "minusDI": 30.12,
+  "rv20": 0.03647,
   "volatilityRegime": "LOW",
   "trendScore": 5,
   "trendScoreMax": 5,
@@ -39,16 +39,49 @@
     "ADX": true
   },
   "candidateSignal": "SELL (SHORT)",
-  "signal": "NEUTRAL (WAIT)",
-  "signalReason": "STOP_TOO_WIDE",
-  "stopLoss": null,
-  "takeProfit": null,
+  "signal": "SELL (SHORT)",
+  "signalReason": "ACCEPT",
+  "stopLoss": 1.1505698699307247,
+  "takeProfit": 1.1173650521354985,
   "levelsAreIndicative": true,
   "execution": "Signal at close; final size/SL/TP recalculated at following daily open with signal-bar risk inputs frozen.",
   "positionPlan": {
-    "valid": false,
-    "rejectionReason": "STOP_TOO_WIDE",
+    "valid": true,
+    "rejectionReason": null,
     "equityEUR": 9954.74,
+    "sizingMode": "adaptive_risk",
+    "baseRiskPct": 0.5,
+    "appliedRiskPct": 0.719,
+    "qualityMultiplier": 1.15,
+    "maxLeverage": 1.5,
+    "desiredUnits": 6421.18,
+    "desiredLeverage": 0.645,
+    "leverageCapHit": false,
+    "recommended": {
+      "name": "risk_target",
+      "units": 6000.0,
+      "lots": 0.06,
+      "notionalEUR": 6000.0,
+      "leverage": 0.603,
+      "usesLeverage": false,
+      "riskAtStopEUR": 66.86,
+      "riskAtStopPct": 0.672,
+      "targetGainEUR": 109.45,
+      "rewardRisk": 1.637
+    },
+    "noLeverageAlternative": {
+      "name": "no_leverage",
+      "units": 6000.0,
+      "lots": 0.06,
+      "notionalEUR": 6000.0,
+      "leverage": 0.603,
+      "usesLeverage": false,
+      "riskAtStopEUR": 66.86,
+      "riskAtStopPct": 0.672,
+      "targetGainEUR": 109.45,
+      "rewardRisk": 1.637
+    },
+    "selection": "RISK_TARGET_NO_LEVERAGE",
     "trend": {
       "score": 5,
       "maxScore": 5,
@@ -63,35 +96,15 @@
         "ADX": true
       }
     },
-    "stopLoss": 1.156364871564886,
-    "takeProfit": 1.111766507620206,
-    "stopDistance": 0.01715321690180005,
-    "stopDistanceATR": 3.2034703374474534,
+    "stopLoss": 1.1505698699307247,
+    "takeProfit": 1.1173650521354985,
+    "stopDistance": 0.012771083767394664,
+    "stopDistanceATR": 2.4320032569468175,
     "stopATRMultiplier": 1.35,
     "stopSource": "STRUCTURE",
     "targetRR": 1.6,
-    "recommended": {
-      "units": 0.0,
-      "lots": 0.0,
-      "notionalEUR": 0.0,
-      "leverage": 0.0,
-      "usesLeverage": false,
-      "riskAtStopEUR": 0.0,
-      "riskAtStopPct": 0.0,
-      "targetGainEUR": 0.0,
-      "rewardRisk": 0.0
-    },
-    "noLeverageAlternative": {
-      "units": 0.0,
-      "lots": 0.0,
-      "notionalEUR": 0.0,
-      "leverage": 0.0,
-      "usesLeverage": false,
-      "riskAtStopEUR": 0.0,
-      "riskAtStopPct": 0.0,
-      "targetGainEUR": 0.0,
-      "rewardRisk": 0.0
-    }
+    "levelsIndicativeUntilNextOpen": true,
+    "mlProbability": null
   },
   "parameters": {
     "initial_capital_eur": 10000.0,
@@ -161,10 +174,10 @@
     "maxDrawdown": 1.223,
     "profitFactor": 0.7758,
     "totalTrades": 12,
-    "sharpe": -0.331,
-    "sortino": -0.3325,
+    "sharpe": -0.3301,
+    "sortino": -0.3307,
     "avgTradeEUR": -3.77,
-    "exposurePct": 35.08,
+    "exposurePct": 34.9,
     "avgLeverage": 0.486,
     "maxLeverageUsed": 0.81,
     "leveragedTrades": 0,
@@ -176,7 +189,7 @@
     "takeProfitTrades": 1,
     "timeExitTrades": 9,
     "rejectedTrendSignals": 24,
-    "rejectedWideStops": 26,
+    "rejectedWideStops": 27,
     "rejectedSize": 0
   },
   "trades": [
@@ -555,7 +568,6 @@
   ],
   "chart": {
     "dates": [
-      "2025-11-20",
       "2025-11-21",
       "2025-11-24",
       "2025-11-25",
@@ -774,10 +786,10 @@
       "2026-09-22",
       "2026-09-23",
       "2026-09-24",
-      "2026-09-25"
+      "2026-09-25",
+      "2026-09-28"
     ],
     "prices": [
-      1.154068,
       1.153456,
       1.150761,
       1.152007,
@@ -996,10 +1008,10 @@
       1.14646,
       1.144794,
       1.138187,
-      1.139212
+      1.137475,
+      1.137799
     ],
     "ema50": [
-      1.161631,
       1.161311,
       1.160897,
       1.160548,
@@ -1218,10 +1230,10 @@
       1.155444,
       1.155027,
       1.154366,
-      1.153772
+      1.153704,
+      1.15308
     ],
     "ema200": [
-      1.141636,
       1.141754,
       1.141844,
       1.141945,
@@ -1440,10 +1452,10 @@
       1.156647,
       1.156529,
       1.156347,
-      1.156176
+      1.156159,
+      1.155976
     ],
     "sma50": [
-      1.165134,
       1.164733,
       1.164295,
       1.163808,
@@ -1662,10 +1674,10 @@
       1.15406,
       1.154106,
       1.15393,
-      1.153825
+      1.15379,
+      1.15369
     ],
     "upperBand": [
-      1.167433,
       1.167004,
       1.166404,
       1.16513,
@@ -1884,10 +1896,10 @@
       1.171302,
       1.170761,
       1.171208,
-      1.170839
+      1.171096,
+      1.17142
     ],
     "lowerBand": [
-      1.148111,
       1.147705,
       1.147064,
       1.147021,
@@ -2106,7 +2118,8 @@
       1.145548,
       1.14382,
       1.140643,
-      1.138369
+      1.137939,
+      1.135506
     ]
   }
 }
