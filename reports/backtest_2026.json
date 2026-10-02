@@ -1,10 +1,10 @@
 {
   "window": {
     "start": "2026-01-01",
-    "end": "2026-09-30"
+    "end": "2026-10-01"
   },
   "historyStart": "2016-10-03",
-  "rows": 2600,
+  "rows": 2601,
   "methodology": [
     "2025/prior history warms indicators; P&L starts at requested evaluation date.",
     "Each model generates its own signals independently.",
@@ -18,16 +18,16 @@
       "model": "V3.1 benchmark / adaptive risk",
       "accountCurrency": "EUR",
       "initialCapitalEUR": 10000.0,
-      "finalCapitalEUR": 10311.87,
-      "totalReturn": 3.1187,
+      "finalCapitalEUR": 10376.9,
+      "totalReturn": 3.769,
       "winRate": 66.67,
       "maxDrawdown": 1.7783,
-      "profitFactor": 2.0536,
+      "profitFactor": 2.2733,
       "totalTrades": 24,
-      "sharpe": 1.3631,
-      "sortino": 1.8797,
-      "avgTradeEUR": 13.0,
-      "exposurePct": 65.46,
+      "sharpe": 1.592,
+      "sortino": 2.2499,
+      "avgTradeEUR": 15.71,
+      "exposurePct": 65.64,
       "avgLeverage": 0.666,
       "maxLeverageUsed": 0.885,
       "leveragedTrades": 0,
@@ -52,10 +52,10 @@
       "maxDrawdown": 1.223,
       "profitFactor": 0.7758,
       "totalTrades": 12,
-      "sharpe": -0.3284,
-      "sortino": -0.3273,
+      "sharpe": -0.3276,
+      "sortino": -0.3256,
       "avgTradeEUR": -3.77,
-      "exposurePct": 34.54,
+      "exposurePct": 34.36,
       "avgLeverage": 0.486,
       "maxLeverageUsed": 0.81,
       "leveragedTrades": 0,
@@ -67,7 +67,7 @@
       "takeProfitTrades": 1.0,
       "timeExitTrades": 9.0,
       "rejectedTrendSignals": 24.0,
-      "rejectedWideStops": 29.0,
+      "rejectedWideStops": 30.0,
       "rejectedSize": 0.0
     },
     {
@@ -80,10 +80,10 @@
       "maxDrawdown": 2.2814,
       "profitFactor": 0.6798,
       "totalTrades": 12,
-      "sharpe": -0.5218,
-      "sortino": -0.4605,
+      "sharpe": -0.5205,
+      "sortino": -0.4581,
       "avgTradeEUR": -10.52,
-      "exposurePct": 34.54,
+      "exposurePct": 34.36,
       "avgLeverage": 0.918,
       "maxLeverageUsed": 1.0,
       "leveragedTrades": 0,
@@ -95,7 +95,7 @@
       "takeProfitTrades": 1.0,
       "timeExitTrades": 9.0,
       "rejectedTrendSignals": 24.0,
-      "rejectedWideStops": 29.0,
+      "rejectedWideStops": 30.0,
       "rejectedSize": 0.0
     }
   ],
@@ -891,10 +891,10 @@
     {
       "signalDate": "2026-09-25 00:00:00+00:00",
       "entry": "2026-09-28 00:00:00+00:00",
-      "exit": "2026-09-30 00:00:00+00:00",
+      "exit": "2026-10-01 00:00:00+00:00",
       "side": "SHORT",
       "entryPrice": 1.137775,
-      "exitPrice": 1.134133,
+      "exitPrice": 1.126022,
       "stopLoss": 1.145822,
       "takeProfit": 1.125972,
       "units": 9000.0,
@@ -903,13 +903,13 @@
       "leverage": 0.875,
       "usesLeverage": false,
       "appliedRiskPct": 0.625,
-      "profitEUR": 28.9,
-      "reason": "EOD"
+      "profitEUR": 93.94,
+      "reason": "TP"
     }
   ],
   "rejections": {
     "trend": 24,
-    "wide_stop": 29,
+    "wide_stop": 30,
     "size": 0
   }
 }
