@@ -1,31 +1,31 @@
 {
   "modelVersion": "3.2.0",
   "modelName": "Trend + Structural Risk Engine",
-  "lastUpdate": "2026-10-09 02:26:43 UTC",
+  "lastUpdate": "2026-10-10 01:52:46 UTC",
   "pair": "EUR/USD",
   "accountCurrency": "EUR",
   "liveMode": "V3_2_CURRENT_ONLY",
   "backtestWindow": {
     "start": "2026-01-01",
-    "end": "2026-10-08"
+    "end": "2026-10-09"
   },
   "warmup": {
     "historyAvailableFrom": "2016-10-10",
     "preEvaluationHistoryUsedOnlyForIndicators": true
   },
-  "date": "2026-10-08 00:00:00+00:00",
-  "currentPrice": 1.120134,
-  "rsi": 21.19,
-  "sma50": 1.151667,
-  "ema50": 1.146,
-  "ema200": 1.153794,
-  "ema50Slope": -0.007248,
-  "macdHist": -0.0019546,
-  "atr": 0.0066513,
-  "adx": 48.35,
-  "plusDI": 6.02,
-  "minusDI": 31.94,
-  "rv20": 0.03936,
+  "date": "2026-10-09 00:00:00+00:00",
+  "currentPrice": 1.120574,
+  "rsi": 22.15,
+  "sma50": 1.151032,
+  "ema50": 1.145003,
+  "ema200": 1.153463,
+  "ema50Slope": -0.007542,
+  "macdHist": -0.0017181,
+  "atr": 0.0065628,
+  "adx": 48.99,
+  "plusDI": 8.18,
+  "minusDI": 30.06,
+  "rv20": 0.04013,
   "volatilityRegime": "LOW",
   "trendScore": 5,
   "trendScoreMax": 5,
@@ -63,10 +63,10 @@
         "ADX": true
       }
     },
-    "stopLoss": 1.1387706152823096,
-    "takeProfit": 1.0903163350063125,
-    "stopDistance": 0.018636261644614294,
-    "stopDistanceATR": 2.801890502033716,
+    "stopLoss": 1.1387573379770972,
+    "takeProfit": 1.0914800328419911,
+    "stopDistance": 0.018183578898117725,
+    "stopDistanceATR": 2.7707037631953346,
     "stopATRMultiplier": 1.35,
     "stopSource": "STRUCTURE",
     "targetRR": 1.6,
@@ -161,10 +161,10 @@
     "maxDrawdown": 1.223,
     "profitFactor": 0.7758,
     "totalTrades": 12,
-    "sharpe": -0.3234,
-    "sortino": -0.3175,
+    "sharpe": -0.3226,
+    "sortino": -0.3159,
     "avgTradeEUR": -3.77,
-    "exposurePct": 33.5,
+    "exposurePct": 33.33,
     "avgLeverage": 0.486,
     "maxLeverageUsed": 0.81,
     "leveragedTrades": 0,
@@ -176,7 +176,7 @@
     "takeProfitTrades": 1,
     "timeExitTrades": 9,
     "rejectedTrendSignals": 24,
-    "rejectedWideStops": 35,
+    "rejectedWideStops": 36,
     "rejectedSize": 0
   },
   "trades": [
@@ -555,7 +555,6 @@
   ],
   "chart": {
     "dates": [
-      "2025-12-03",
       "2025-12-04",
       "2025-12-05",
       "2025-12-08",
@@ -774,10 +773,10 @@
       "2026-10-05",
       "2026-10-06",
       "2026-10-07",
-      "2026-10-08"
+      "2026-10-08",
+      "2026-10-09"
     ],
     "prices": [
-      1.162791,
       1.166684,
       1.16428,
       1.164022,
@@ -996,10 +995,10 @@
       1.125454,
       1.121705,
       1.125353,
-      1.120134
+      1.120134,
+      1.120574
     ],
     "ema50": [
-      1.160469,
       1.160712,
       1.160852,
       1.160977,
@@ -1218,10 +1217,10 @@
       1.149012,
       1.147941,
       1.147055,
-      1.146
+      1.146,
+      1.145003
     ],
     "ema200": [
-      1.143002,
       1.143237,
       1.143447,
       1.143651,
@@ -1440,10 +1439,10 @@
       1.15475,
       1.154421,
       1.154132,
-      1.153794
+      1.153794,
+      1.153463
     ],
     "sma50": [
-      1.161333,
       1.161178,
       1.161138,
       1.161002,
@@ -1662,10 +1661,10 @@
       1.15277,
       1.152465,
       1.152199,
-      1.151667
+      1.151667,
+      1.151032
     ],
     "upperBand": [
-      1.165004,
       1.166067,
       1.166825,
       1.167396,
@@ -1884,10 +1883,10 @@
       1.169962,
       1.168824,
       1.166638,
-      1.1642
+      1.1642,
+      1.16154
     ],
     "lowerBand": [
-      1.149522,
       1.15016,
       1.150338,
       1.15073,
@@ -2106,7 +2105,8 @@
       1.122006,
       1.119038,
       1.117486,
-      1.115599
+      1.115599,
+      1.114217
     ]
   }
 }
