@@ -3,7 +3,7 @@
     "trades": 13,
     "stoppedTrades": 2,
     "avgMFER": 0.6713846153846154,
-    "avgMAER": 0.5753846153846154,
+    "avgMAER": 0.5732307692307692,
     "medianWinnerCaptureRatio": 0.369,
     "falseStopRate_3dPct": 0.0,
     "returnToEntryAfterStop_3dPct": 0.0,
