@@ -1,30 +1,30 @@
 {
   "modelVersion": "3.2.0",
   "modelName": "Trend + Structural Risk Engine",
-  "lastUpdate": "2026-10-20 01:09:57 UTC",
+  "lastUpdate": "2026-10-21 00:48:11 UTC",
   "pair": "EUR/USD",
   "accountCurrency": "EUR",
   "liveMode": "V3_2_CURRENT_ONLY",
   "backtestWindow": {
     "start": "2026-01-01",
-    "end": "2026-10-19"
+    "end": "2026-10-20"
   },
   "warmup": {
-    "historyAvailableFrom": "2016-10-20",
+    "historyAvailableFrom": "2016-10-21",
     "preEvaluationHistoryUsedOnlyForIndicators": true
   },
-  "date": "2026-10-19 00:00:00+00:00",
-  "currentPrice": 1.122549,
-  "rsi": 34.73,
-  "sma50": 1.147008,
-  "ema50": 1.139719,
-  "ema200": 1.151526,
-  "ema50Slope": -0.008088,
-  "macdHist": 0.0003071,
-  "atr": 0.0065221,
-  "adx": 51.06,
-  "plusDI": 10.57,
-  "minusDI": 28.01,
+  "date": "2026-10-20 00:00:00+00:00",
+  "currentPrice": 1.121579,
+  "rsi": 33.71,
+  "sma50": 1.146347,
+  "ema50": 1.139008,
+  "ema200": 1.151228,
+  "ema50Slope": -0.007782,
+  "macdHist": 0.0005789,
+  "atr": 0.006432,
+  "adx": 49.95,
+  "plusDI": 12.52,
+  "minusDI": 26.37,
   "rv20": 0.04346,
   "volatilityRegime": "NORMAL",
   "trendScore": 5,
@@ -108,20 +108,20 @@
   "backtest": {
     "accountCurrency": "EUR",
     "initialCapitalEUR": 10000.0,
-    "finalCapitalEUR": 9938.17,
-    "totalReturn": -0.6183,
+    "finalCapitalEUR": 9945.07,
+    "totalReturn": -0.5493,
     "winRate": 38.46,
     "maxDrawdown": 1.223,
-    "profitFactor": 0.7169,
+    "profitFactor": 0.7403,
     "totalTrades": 13,
-    "sharpe": -0.4351,
-    "sortino": -0.4346,
-    "avgTradeEUR": -4.76,
-    "exposurePct": 34.3,
+    "sharpe": -0.3841,
+    "sortino": -0.3832,
+    "avgTradeEUR": -4.23,
+    "exposurePct": 34.62,
     "avgLeverage": 0.51,
     "maxLeverageUsed": 0.81,
     "leveragedTrades": 0,
-    "expectancyR": -0.08,
+    "expectancyR": -0.072,
     "avgMFER": 0.671,
     "avgMAER": 0.573,
     "medianWinnerCaptureRatio": 0.369,
@@ -508,10 +508,10 @@
     {
       "signalDate": "2026-10-13 00:00:00+00:00",
       "entry": "2026-10-14 00:00:00+00:00",
-      "exit": "2026-10-19 00:00:00+00:00",
+      "exit": "2026-10-20 00:00:00+00:00",
       "side": "SHORT",
       "entryPrice": 1.120273,
-      "exitPrice": 1.122599,
+      "exitPrice": 1.121629,
       "stopLoss": 1.129492,
       "finalStop": 1.129492,
       "takeProfit": 1.105522,
@@ -522,8 +522,8 @@
       "usesLeverage": false,
       "appliedRiskPct": 0.719,
       "initialRiskEUR": 65.65,
-      "profitEUR": -16.58,
-      "rMultiple": -0.252,
+      "profitEUR": -9.67,
+      "rMultiple": -0.147,
       "mfeR": 0.962,
       "maeR": 0.731,
       "captureRatio": null,
@@ -539,7 +539,6 @@
   ],
   "chart": {
     "dates": [
-      "2025-12-12",
       "2025-12-15",
       "2025-12-16",
       "2025-12-17",
@@ -758,10 +757,10 @@
       "2026-10-14",
       "2026-10-15",
       "2026-10-16",
-      "2026-10-19"
+      "2026-10-19",
+      "2026-10-20"
     ],
     "prices": [
-      1.173943,
       1.173764,
       1.175461,
       1.17495,
@@ -980,10 +979,10 @@
       1.120448,
       1.119507,
       1.121315,
-      1.122549
+      1.122549,
+      1.121579
     ],
     "ema50": [
-      1.162007,
       1.162468,
       1.162978,
       1.163447,
@@ -1202,10 +1201,10 @@
       1.142085,
       1.1412,
       1.14042,
-      1.139719
+      1.139719,
+      1.139008
     ],
     "ema200": [
-      1.144599,
       1.144889,
       1.145193,
       1.145489,
@@ -1424,10 +1423,10 @@
       1.152451,
       1.152124,
       1.151817,
-      1.151526
+      1.151526,
+      1.151228
     ],
     "sma50": [
-      1.16057,
       1.16062,
       1.160709,
       1.160898,
@@ -1646,10 +1645,10 @@
       1.149017,
       1.148293,
       1.14767,
-      1.147008
+      1.147008,
+      1.146347
     ],
     "upperBand": [
-      1.172122,
       1.174071,
       1.176234,
       1.177984,
@@ -1868,10 +1867,10 @@
       1.15356,
       1.151775,
       1.149388,
-      1.14644
+      1.14644,
+      1.143384
     ],
     "lowerBand": [
-      1.14942,
       1.148694,
       1.148172,
       1.148104,
@@ -2090,7 +2089,8 @@
       1.111163,
       1.1102,
       1.109958,
-      1.110363
+      1.110363,
+      1.110932
     ]
   }
 }
