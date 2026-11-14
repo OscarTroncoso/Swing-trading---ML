@@ -1,36 +1,36 @@
 {
   "modelVersion": "3.2.0",
   "modelName": "Trend + Structural Risk Engine",
-  "lastUpdate": "2026-11-13 02:50:04 UTC",
+  "lastUpdate": "2026-11-14 02:37:20 UTC",
   "pair": "EUR/USD",
   "accountCurrency": "EUR",
   "liveMode": "V3_2_CURRENT_ONLY",
   "backtestWindow": {
     "start": "2026-01-01",
-    "end": "2026-11-12"
+    "end": "2026-11-13"
   },
   "warmup": {
     "historyAvailableFrom": "2016-11-14",
     "preEvaluationHistoryUsedOnlyForIndicators": true
   },
-  "date": "2026-11-12 00:00:00+00:00",
-  "currentPrice": 1.109521,
-  "rsi": 36.29,
-  "sma50": 1.131877,
-  "ema50": 1.128896,
-  "ema200": 1.146147,
-  "ema50Slope": -0.00464,
-  "macdHist": 0.0003597,
-  "atr": 0.0078439,
-  "adx": 29.17,
-  "plusDI": 14.95,
-  "minusDI": 22.73,
-  "rv20": 0.05422,
+  "date": "2026-11-13 00:00:00+00:00",
+  "currentPrice": 1.105021,
+  "rsi": 33.04,
+  "sma50": 1.130721,
+  "ema50": 1.127959,
+  "ema200": 1.145738,
+  "ema50Slope": -0.004919,
+  "macdHist": -0.0003132,
+  "atr": 0.0077739,
+  "adx": 28.94,
+  "plusDI": 14.01,
+  "minusDI": 23.83,
+  "rv20": 0.05505,
   "volatilityRegime": "HIGH",
   "trendScore": 5,
   "trendScoreMax": 5,
   "trendRegime": "STRONG_TREND",
-  "marketBias": "BEARISH",
+  "marketBias": "BULLISH",
   "trendComponents": {
     "priceVsEMA200": true,
     "EMA50VsEMA200": true,
@@ -38,14 +38,61 @@
     "DMI": true,
     "ADX": true
   },
-  "candidateSignal": "NONE",
+  "candidateSignal": "SELL (SHORT)",
   "signal": "NEUTRAL (WAIT)",
-  "signalReason": "NO_TECHNICAL_CANDIDATE",
+  "signalReason": "STOP_TOO_WIDE",
   "stopLoss": null,
   "takeProfit": null,
   "levelsAreIndicative": true,
   "execution": "Signal at close; final size/SL/TP recalculated at following daily open with signal-bar risk inputs frozen.",
-  "positionPlan": null,
+  "positionPlan": {
+    "valid": false,
+    "rejectionReason": "STOP_TOO_WIDE",
+    "equityEUR": 9937.27,
+    "trend": {
+      "score": 5,
+      "maxScore": 5,
+      "accepted": true,
+      "regime": "STRONG_TREND",
+      "volatilityRegime": "HIGH",
+      "components": {
+        "priceVsEMA200": true,
+        "EMA50VsEMA200": true,
+        "EMA50Slope": true,
+        "DMI": true,
+        "ADX": true
+      }
+    },
+    "stopLoss": 1.1286889038453771,
+    "takeProfit": 1.0671529734976652,
+    "stopDistance": 0.023667665518350756,
+    "stopDistanceATR": 3.044522657546673,
+    "stopATRMultiplier": 1.75,
+    "stopSource": "STRUCTURE",
+    "targetRR": 1.6,
+    "recommended": {
+      "units": 0.0,
+      "lots": 0.0,
+      "notionalEUR": 0.0,
+      "leverage": 0.0,
+      "usesLeverage": false,
+      "riskAtStopEUR": 0.0,
+      "riskAtStopPct": 0.0,
+      "targetGainEUR": 0.0,
+      "rewardRisk": 0.0
+    },
+    "noLeverageAlternative": {
+      "units": 0.0,
+      "lots": 0.0,
+      "notionalEUR": 0.0,
+      "leverage": 0.0,
+      "usesLeverage": false,
+      "riskAtStopEUR": 0.0,
+      "riskAtStopPct": 0.0,
+      "targetGainEUR": 0.0,
+      "rewardRisk": 0.0
+    }
+  },
   "parameters": {
     "initial_capital_eur": 10000.0,
     "sizing_mode": "adaptive_risk",
@@ -114,10 +161,10 @@
     "maxDrawdown": 1.223,
     "profitFactor": 0.714,
     "totalTrades": 13,
-    "sharpe": -0.4225,
-    "sortino": -0.4104,
+    "sharpe": -0.4215,
+    "sortino": -0.4086,
     "avgTradeEUR": -4.83,
-    "exposurePct": 32.44,
+    "exposurePct": 32.3,
     "avgLeverage": 0.51,
     "maxLeverageUsed": 0.81,
     "leveragedTrades": 0,
@@ -539,7 +586,6 @@
   ],
   "chart": {
     "dates": [
-      "2026-01-09",
       "2026-01-12",
       "2026-01-13",
       "2026-01-14",
@@ -758,10 +804,10 @@
       "2026-11-09",
       "2026-11-10",
       "2026-11-11",
-      "2026-11-12"
+      "2026-11-12",
+      "2026-11-13"
     ],
     "prices": [
-      1.165787,
       1.162372,
       1.166698,
       1.164253,
@@ -980,10 +1026,10 @@
       1.114728,
       1.122246,
       1.116894,
-      1.109521
+      1.109521,
+      1.105021
     ],
     "ema50": [
-      1.167733,
       1.167523,
       1.16749,
       1.167363,
@@ -1202,10 +1248,10 @@
       1.130534,
       1.130209,
       1.129686,
-      1.128896
+      1.128896,
+      1.127959
     ],
     "ema200": [
-      1.149361,
       1.14949,
       1.149662,
       1.149807,
@@ -1424,10 +1470,10 @@
       1.147059,
       1.146813,
       1.146515,
-      1.146147
+      1.146147,
+      1.145738
     ],
     "sma50": [
-      1.164144,
       1.164185,
       1.164374,
       1.164603,
@@ -1646,10 +1692,10 @@
       1.134501,
       1.133711,
       1.132858,
-      1.131877
+      1.131877,
+      1.130721
     ],
     "upperBand": [
-      1.18065,
       1.181642,
       1.181703,
       1.181931,
@@ -1868,10 +1914,10 @@
       1.125903,
       1.126086,
       1.126042,
-      1.126965
+      1.126965,
+      1.128259
     ],
     "lowerBand": [
-      1.166263,
       1.164495,
       1.16371,
       1.16253,
@@ -2090,7 +2136,8 @@
       1.11333,
       1.113769,
       1.113458,
-      1.111537
+      1.111537,
+      1.108613
     ]
   }
 }
