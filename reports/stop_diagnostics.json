@@ -1,10 +1,10 @@
 {
   "summary": {
-    "trades": 13,
+    "trades": 14,
     "stoppedTrades": 2,
-    "avgMFER": 0.6713846153846154,
-    "avgMAER": 0.5732307692307692,
-    "medianWinnerCaptureRatio": 0.369,
+    "avgMFER": 0.6414285714285715,
+    "avgMAER": 0.5412857142857143,
+    "medianWinnerCaptureRatio": 0.35,
     "falseStopRate_3dPct": 0.0,
     "returnToEntryAfterStop_3dPct": 0.0,
     "falseStopRate_5dPct": 0.0,
